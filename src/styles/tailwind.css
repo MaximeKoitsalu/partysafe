@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/*
+ * partysafe design tokens (Tailwind v4 @theme).
+ * Locked at PLAN.md gate close-out (Design phase D1-D14, D2 color tokens).
+ *
+ * Reading guide:
+ * - Typography: Inter (UI), Source Serif 4 (mechanism prose), JetBrains Mono (timeline/numerals).
+ *   All self-hosted (Eng F8). Self-hosting fonts is a privacy + offline decision.
+ * - Severity colors: dark-mode-primary palette. Every chip pairs color + icon + qualifier
+ *   text (Design D2/D11). Dangerous gets a stripe pattern overlay so it survives
+ *   color-blind users and B&W printing.
+ * - Dark mode is default. Light mode is the alt (Design D3).
+ *   `prefers-color-scheme: dark` honored; manual toggle via .light-mode class on <html>.
+ * - Touch targets: 44px minimum (D13).
+ * - Motion: `motion-reduce:` variants required on every animation (D14).
+ */
+
+@theme {
+  /* Typography */
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* Severity colors — dark mode (default) */
+  --color-sev-synergy: #94a3b8; /* slate-400; NOT green. Reported synergy, not safety. */
+  --color-sev-low-no-syn: #60a5fa; /* blue-400 */
+  --color-sev-low-decrease: #a78bfa; /* violet-400 */
+  --color-sev-caution: #fbbf24; /* amber-400 */
+  --color-sev-unsafe: #fb923c; /* orange-400 */
+  --color-sev-dangerous: #f87171; /* red-400 (paired with diagonal stripe pattern) */
+
+  /* Severity colors — light mode (passes WCAG AA on white bg) */
+  --color-sev-synergy-light: #475569; /* slate-600 */
+  --color-sev-low-no-syn-light: #1d4ed8; /* blue-700 */
+  --color-sev-low-decrease-light: #6d28d9; /* violet-700 */
+  --color-sev-caution-light: #b45309; /* amber-700 */
+  --color-sev-unsafe-light: #c2410c; /* orange-700 */
+  --color-sev-dangerous-light: #b91c1c; /* red-700 */
+
+  /* Surfaces — dark mode default */
+  --color-bg-base: #0f172a; /* slate-900 */
+  --color-bg-elevated: #1e293b; /* slate-800 */
+  --color-bg-overlay: #334155; /* slate-700 — bottom sheets */
+  --color-fg-primary: #f1f5f9; /* slate-100 */
+  --color-fg-muted: #94a3b8; /* slate-400 */
+  --color-border: #334155; /* slate-700 */
+
+  /* Touch target minimum (D13) */
+  --spacing-touch: 2.75rem; /* 44px */
+
+  /* Emergency action bar */
+  --color-emergency-bar: #1e293b; /* neutral slate-800; NOT severity-red — desensitization */
+  --color-emergency-icon: #fbbf24; /* amber */
+  --color-emergency-fg: #f1f5f9; /* slate-100 */
+}
+
+/* Light mode overrides (when html.light-mode is set or prefers-color-scheme: light + no override) */
+@layer base {
+  html.light-mode {
+    --color-bg-base: #ffffff;
+    --color-bg-elevated: #f8fafc; /* slate-50 */
+    --color-bg-overlay: #e2e8f0; /* slate-200 */
+    --color-fg-primary: #0f172a; /* slate-900 */
+    --color-fg-muted: #475569; /* slate-600 */
+    --color-border: #cbd5e1; /* slate-300 */
+    --color-sev-synergy: var(--color-sev-synergy-light);
+    --color-sev-low-no-syn: var(--color-sev-low-no-syn-light);
+    --color-sev-low-decrease: var(--color-sev-low-decrease-light);
+    --color-sev-caution: var(--color-sev-caution-light);
+    --color-sev-unsafe: var(--color-sev-unsafe-light);
+    --color-sev-dangerous: var(--color-sev-dangerous-light);
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not(.dark-mode) {
+      --color-bg-base: #ffffff;
+      --color-bg-elevated: #f8fafc;
+      --color-bg-overlay: #e2e8f0;
+      --color-fg-primary: #0f172a;
+      --color-fg-muted: #475569;
+      --color-border: #cbd5e1;
+      --color-sev-synergy: var(--color-sev-synergy-light);
+      --color-sev-low-no-syn: var(--color-sev-low-no-syn-light);
+      --color-sev-low-decrease: var(--color-sev-low-decrease-light);
+      --color-sev-caution: var(--color-sev-caution-light);
+      --color-sev-unsafe: var(--color-sev-unsafe-light);
+      --color-sev-dangerous: var(--color-sev-dangerous-light);
+    }
+  }
+
+  /* Base reset for the app */
+  html {
+    background: var(--color-bg-base);
+    color: var(--color-fg-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    /* Reserve space for the sticky emergency action bar (64px). */
+    padding-bottom: 4rem;
+  }
+
+  /* Reduced motion: collapse all animations to instant transitions. (D14) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Focus ring — accessible across both themes */
+  :focus-visible {
+    outline: 2px solid var(--color-sev-caution);
+    outline-offset: 2px;
+  }
+
+  /* Diagonal stripe pattern for the Dangerous severity chip.
+   * Survives color-blind + B&W printing (Design D2). */
+  .pattern-danger-stripes {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--color-sev-dangerous),
+      var(--color-sev-dangerous) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+}
+
+/*
+ * Print stylesheet (Design D20, Eng F13).
+ * Locked layout: 4x6 portrait wallet card with inverted emergency block at bottom 1.5in.
+ * Full content spec implemented in src/components/PrintCard.ts (M5).
+ * This block sets the @page rule + force-print backgrounds (iOS Safari needs the
+ * `print-color-adjust: exact` directive).
+ */
+@media print {
+  @page {
+    size: 4in 6in;
+    margin: 0.25in;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide non-print UI. Each component opts in by adding .print-only or .print-hide */
+  .print-hide,
+  .sticky-emergency-bar,
+  .menu,
+  .top-bar {
+    display: none !important;
+  }
+}

@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Bun
+.bun/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+
+# Local env (none should exist for this project; private to dev machine if any)
+.env
+.env.local
+.env.*.local

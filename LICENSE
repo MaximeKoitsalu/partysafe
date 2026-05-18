@@ -1,0 +1,29 @@
+partysafe is released under Creative Commons Attribution-NonCommercial-ShareAlike
+4.0 International (CC BY-NC-SA 4.0).
+
+Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+Summary (not legal advice):
+  - Share: copy and redistribute in any medium or format
+  - Adapt: remix, transform, and build upon the material
+  Under the following terms:
+  - Attribution: you must give appropriate credit
+  - NonCommercial: you may not use for commercial purposes
+  - ShareAlike: if you remix or build upon the material, you must distribute
+    your contributions under the same license
+
+This license was chosen to match the license of the upstream TripSit drugs
+dataset (https://github.com/TripSit/drugs), which this project incorporates.
+
+Dual-licensing intent (to be finalized before public launch — see PLAN.md
+ship gates):
+  - The TripSit-derived data shipped under src/data/tripsit.json remains under
+    CC BY-NC-SA 4.0 (required by upstream license).
+  - Original mechanism content authored for this project (src/data/mechanisms.json)
+    is intended to be dual-licensed under CC BY-SA 4.0 (without the NonCommercial
+    clause) so harm-reduction organizations can redistribute freely.
+  - Original UI code (everything in src/ outside data/) is intended to be
+    dual-licensed under MIT.
+
+  This dual-licensing structure will be finalized in writing, with attribution
+  trails documented in ATTRIBUTION.md, before v1 public launch.

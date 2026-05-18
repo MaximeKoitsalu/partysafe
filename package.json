@@ -1,0 +1,29 @@
+{
+  "name": "partysafe",
+  "version": "0.1.0",
+  "description": "Harm-reduction combo planner. Static, mobile-first, no tracking. Built on TripSit data (CC BY-NC-SA).",
+  "type": "module",
+  "private": true,
+  "license": "CC-BY-NC-SA-4.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "audit": "bun pm audit"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/bun": "^1.3.0",
+    "eslint": "^9.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.0.0",
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  }
+}

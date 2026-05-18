@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0F172A" />
+
+    <!--
+      Privacy + security hardening (PLAN.md Eng E9-E11):
+      - referrer no-referrer  : prevents combo slugs leaking via Referer header to
+                                external links (e.g. PsychonautWiki/TripSit clicks).
+      - CSP                   : default-src 'self'; restricts XSS blast radius if a
+                                regression slips past the ESLint innerHTML ban.
+                                style-src includes 'unsafe-inline' for Vite's
+                                dev style injection; revisit if we eliminate it.
+    -->
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none';"
+    />
+
+    <title>partysafe — combo information for harm reduction</title>
+    <meta
+      name="description"
+      content="Pick 2-4 substances to see how they interact. Mechanism explanations, timing, and emergency resources. Not medical advice. Built on TripSit data."
+    />
+
+    <!--
+      OG card is intentionally severity-free (Design D12 + CEO #25).
+      No "this combo is safe" framing in social shares.
+    -->
+    <meta property="og:title" content="partysafe — combo information" />
+    <meta
+      property="og:description"
+      content="Combo info for harm reduction. Mechanism explanations, not medical advice. Emergency: 911 (US) · 112 (EU) · Never Use Alone 1-800-484-3731."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      Self-hosted fonts (Eng F8). Subsetting script in scripts/subset-fonts.ts (added in M1).
+      For now, ship system fonts; subsetted woff2 lands when the script runs.
+    -->
+    <link rel="stylesheet" href="/src/styles/tailwind.css" />
+  </head>
+  <body>
+    <!-- Top bar: brand + menu. Emergency moves to sticky bottom bar (Design C2). -->
+    <header class="top-bar" role="banner">
+      <div id="top-bar-mount"></div>
+    </header>
+
+    <!-- Main content mount point. Components render into here at runtime. -->
+    <main id="app" role="main"></main>
+
+    <!--
+      Sticky emergency action bar (Design D8 + C2).
+      Renders into here at runtime so layout adapts to dark/light mode.
+      The CSS pre-reserves 4rem padding-bottom on body so scrolled content
+      isn't hidden behind it.
+    -->
+    <div id="emergency-bar-mount" class="sticky-emergency-bar" aria-label="Emergency"></div>
+
+    <!--
+      Entry script. Vite resolves /src/main.ts in dev; production builds emit
+      hashed chunks under /assets/.
+    -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
