@@ -1,194 +1,352 @@
 /**
  * partysafe entry point.
  *
- * M0 status: scaffolding only. Mounts a minimal placeholder UI to verify
- * the build + design tokens work end-to-end. Real components land in M2.
+ * Wires:
+ *   - TopBar + EmergencyActionBar (always rendered)
+ *   - SubstancePicker + ComboBanner + ComboGrid (combo route)
+ *   - Hash router → state → re-render on route change
+ *   - Lazy data load (fetch JSON; render shells immediately)
  *
- * Locked decisions from PLAN.md that this file enforces:
- * - DOM mutation policy (Eng E13/E25): textContent only. No innerHTML assignments.
- *   ESLint enforces this; see .eslintrc.json.
- * - Dark mode is default (Design D3). prefers-color-scheme is honored;
- *   manual toggle via html.light-mode / html.dark-mode (lands in M5 menu).
- * - Sticky emergency action bar mount point exists in index.html;
- *   the real component lands in M5.
+ * Bottom-sheet mechanism explainer / drug detail / emergency view / about
+ * land in M3-M5. For M2, tapping a combo tile dispatches a custom event;
+ * we render a temporary inline expansion until the sheet exists.
  */
 
-const APP_VERSION = "0.1.0-m0";
+import { createTopBar } from "./components/TopBar.ts";
+import { createEmergencyActionBar } from "./components/EmergencyActionBar.ts";
+import { createSubstancePicker, type SubstancePickerHandle } from "./components/SubstancePicker.ts";
+import { createComboBanner, type ComboBannerHandle } from "./components/ComboBanner.ts";
+import { createComboGrid, type ComboGridHandle } from "./components/ComboGrid.ts";
+import { loadAll } from "./data/load.ts";
+import { el, replace } from "./lib/dom.ts";
+import { pairwiseRisksFor } from "./lib/combo.ts";
+import { tokenFor } from "./lib/severity.ts";
+import {
+  currentRoute,
+  navigate,
+  parseRoute,
+  serializeRoute,
+  subscribe,
+  type ParsedRoute,
+} from "./router.ts";
+import type {
+  ComboAnalysis,
+  LeanDataset,
+  MechanismFile,
+  PairwiseRisk,
+  SubstanceSlug,
+} from "./types.ts";
+import type { OverrideFile } from "./lib/combo.ts";
 
-function createElement<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  attrs: Record<string, string> = {},
-  text?: string,
-): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag);
-  for (const [key, value] of Object.entries(attrs)) {
-    if (key === "class") el.className = value;
-    else el.setAttribute(key, value);
+type AppState = {
+  selection: SubstanceSlug[];
+  dataset?: LeanDataset;
+  mechanisms?: MechanismFile;
+  overrides?: OverrideFile;
+};
+
+const state: AppState = { selection: [] };
+let picker: SubstancePickerHandle;
+let banner: ComboBannerHandle;
+let grid: ComboGridHandle;
+let comboSection: HTMLElement;
+let mechanismExpansionMount: HTMLElement;
+
+function computeAnalysis(): ComboAnalysis | undefined {
+  if (!state.dataset || !state.mechanisms) return undefined;
+  return pairwiseRisksFor(state.selection, {
+    dataset: state.dataset,
+    mechanisms: state.mechanisms,
+    ...(state.overrides && { overrides: state.overrides }),
+  });
+}
+
+function renderCombo(): void {
+  picker.setSelection(state.selection);
+  const analysis = computeAnalysis();
+  banner.update(analysis, state.selection.length);
+  grid.update(analysis, state.dataset);
+  // Clear any inline expansion when selection changes.
+  replace(mechanismExpansionMount);
+}
+
+/** Inline mechanism expansion used as a placeholder until the M3 bottom sheet ships. */
+function renderInlineExpansion(pair: PairwiseRisk): void {
+  if (!pair.mechanism && !pair.upstream_note) {
+    replace(
+      mechanismExpansionMount,
+      el(
+        "div",
+        {
+          class:
+            "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-fg-muted)]",
+        },
+        "No mechanism content available for this pair yet. See per-substance pages on the main TripSit site for context.",
+      ),
+    );
+    return;
   }
-  if (text !== undefined) el.textContent = text;
-  return el;
-}
 
-function renderTopBar(target: HTMLElement): void {
-  target.replaceChildren();
-  const wrap = createElement("div", {
-    class:
-      "flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg-base)]",
-  });
-  const brand = createElement(
-    "div",
-    { class: "text-lg font-semibold tracking-tight" },
-    "partysafe",
-  );
-  const menu = createElement(
-    "button",
-    {
-      class:
-        "menu inline-flex items-center justify-center min-h-touch min-w-touch text-sm text-[var(--color-fg-muted)]",
-      type: "button",
-      "aria-label": "Menu",
-    },
-    "☰",
-  );
-  wrap.append(brand, menu);
-  target.append(wrap);
-}
+  const a = state.dataset?.[pair.a]?.pretty_name ?? pair.a;
+  const b = state.dataset?.[pair.b]?.pretty_name ?? pair.b;
+  const sev = pair.severity;
+  const t = sev ? tokenFor(sev) : undefined;
+  const content = pair.mechanism?.locales.en;
 
-function renderPlaceholderApp(target: HTMLElement): void {
-  target.replaceChildren();
-  const wrap = createElement("section", {
-    class: "mx-auto max-w-2xl px-4 py-8 space-y-6",
-  });
-
-  const banner = createElement("div", {
-    class:
-      "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4",
-  });
-  banner.append(
-    createElement(
-      "h1",
-      { class: "text-2xl font-semibold text-[var(--color-fg-primary)]" },
-      "M0 — scaffolding live",
+  const sections: HTMLElement[] = [
+    el(
+      "header",
+      { class: "space-y-1" },
+      el("h2", { class: "text-xl font-semibold text-[var(--color-fg-primary)]" }, `${a} + ${b}`),
+      t
+        ? el(
+            "p",
+            {
+              class: "text-sm font-medium",
+              style: `color: var(${t.cssVar});`,
+            },
+            t.label,
+          )
+        : undefined,
+      t
+        ? el(
+            "p",
+            { class: "text-xs italic text-[var(--color-fg-muted)]" },
+            t.qualifier,
+          )
+        : undefined,
     ),
-    createElement(
-      "p",
-      { class: "mt-2 text-sm text-[var(--color-fg-muted)]" },
-      "Design tokens, dark mode, CSP, Referrer-Policy, and structural mounts are in place. Real UI components land in M2 (substance picker, combo grid). Mechanism content lands in M3.",
-    ),
-  );
-
-  const sevWrap = createElement("div", { class: "space-y-2" });
-  sevWrap.append(
-    createElement(
-      "h2",
-      { class: "text-sm font-medium text-[var(--color-fg-muted)]" },
-      "Severity token preview (dark mode default)",
-    ),
-  );
-  const sevRow = createElement("div", { class: "flex flex-wrap gap-2" });
-
-  const severityPreview: Array<[string, string, string]> = [
-    ["sev-synergy", "Reported Synergy", "ⓘ"],
-    ["sev-low-no-syn", "Low risk", "✓"],
-    ["sev-low-decrease", "Low / decrease", "↓"],
-    ["sev-caution", "Caution", "⚠"],
-    ["sev-unsafe", "Unsafe", "⊘"],
-    ["sev-dangerous", "Dangerous", "☠"],
   ];
 
-  for (const [token, label, icon] of severityPreview) {
-    const chip = createElement("span", {
-      class: "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium",
-      style: `background-color: color-mix(in srgb, var(--color-${token}) 20%, transparent); color: var(--color-${token}); border-left: 4px solid var(--color-${token});`,
-    });
-    chip.append(
-      createElement("span", { "aria-hidden": "true" }, icon),
-      createElement("span", {}, label),
+  if (content) {
+    sections.push(
+      el(
+        "div",
+        { class: "space-y-3" },
+        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "What's happening"),
+        el("p", { class: "text-base text-[var(--color-fg-primary)] leading-relaxed" }, content.mechanism_prose),
+      ),
     );
-    sevRow.append(chip);
+    sections.push(
+      el(
+        "div",
+        { class: "space-y-2" },
+        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "Watch for"),
+        el(
+          "ul",
+          { class: "list-disc list-inside space-y-1 text-base text-[var(--color-fg-primary)]" },
+          ...content.warning_signs.map((s) => el("li", {}, s)),
+        ),
+      ),
+    );
+    sections.push(
+      el(
+        "div",
+        { class: "space-y-2" },
+        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "First aid"),
+        el(
+          "ol",
+          { class: "list-decimal list-inside space-y-1 text-base text-[var(--color-fg-primary)]" },
+          ...content.first_aid.map((s) => el("li", {}, s)),
+        ),
+      ),
+    );
+  } else if (pair.upstream_note) {
+    sections.push(
+      el(
+        "div",
+        { class: "space-y-3" },
+        el(
+          "h3",
+          { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" },
+          "From TripSit upstream",
+        ),
+        el(
+          "p",
+          { class: "text-base text-[var(--color-fg-primary)] leading-relaxed" },
+          pair.upstream_note,
+        ),
+        el(
+          "p",
+          { class: "text-xs italic text-[var(--color-fg-muted)]" },
+          "partysafe-authored mechanism content for this pair has not been written yet. The above is TripSit's upstream note.",
+        ),
+      ),
+    );
   }
-  sevWrap.append(sevRow);
 
-  const danger = createElement("div", {
-    class:
-      "pattern-danger-stripes rounded-md p-3 text-sm font-medium text-white bg-[var(--color-sev-dangerous)]",
-  });
-  danger.append(
-    createElement("span", {}, "Dangerous (with stripe pattern for color-blind + B&W print)"),
-  );
-  sevWrap.append(danger);
-
-  const meta = createElement("p", {
-    class: "text-xs text-[var(--color-fg-muted)] pt-4 border-t border-[var(--color-border)]",
-  });
-  meta.append(
-    document.createTextNode(`partysafe ${APP_VERSION} · `),
-    createElement(
-      "a",
-      { href: "#/about", class: "underline" },
-      "About",
+  replace(
+    mechanismExpansionMount,
+    el(
+      "section",
+      {
+        class:
+          "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 space-y-4",
+        role: "region",
+        "aria-label": "Mechanism details",
+      },
+      ...sections,
     ),
-    document.createTextNode(" · Data: TripSit (CC BY-NC-SA) — not medical advice."),
   );
-
-  wrap.append(banner, sevWrap, meta);
-  target.append(wrap);
 }
 
-function renderEmergencyBar(target: HTMLElement): void {
-  target.replaceChildren();
-  const wrap = createElement("div", {
-    class:
-      "fixed bottom-0 inset-x-0 z-50 flex border-t border-[var(--color-border)] bg-[var(--color-emergency-bar)]",
-    style: "height: 4rem;",
-  });
-
-  const emergencyBtn = createElement("a", {
-    href: "#/emergency",
-    class:
-      "flex-1 inline-flex items-center justify-center gap-2 text-[var(--color-emergency-fg)] font-medium hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
-    "aria-label": "Open emergency information panel",
-  });
-  emergencyBtn.append(
-    createElement(
-      "span",
-      { "aria-hidden": "true", style: "color: var(--color-emergency-icon);" },
-      "⚠",
+function renderHome(): void {
+  replace(
+    comboSection,
+    banner.element,
+    el(
+      "section",
+      { class: "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4" },
+      picker.element,
     ),
-    createElement("span", {}, "Emergency"),
+    grid.element,
+    mechanismExpansionMount,
   );
+  renderCombo();
+}
 
-  const callBtn = createElement("a", {
-    href: "tel:911",
-    class:
-      "flex-1 inline-flex items-center justify-center gap-2 border-l border-[var(--color-border)] text-[var(--color-emergency-fg)] font-medium hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
-    "aria-label": "Call emergency services",
-  });
-  callBtn.append(
-    createElement("span", { "aria-hidden": "true" }, "📞"),
-    createElement("span", {}, "Call 911 / 112"),
+function renderPlaceholder(title: string, body: string): void {
+  replace(
+    comboSection,
+    el(
+      "section",
+      {
+        class:
+          "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 space-y-3",
+      },
+      el("h1", { class: "text-2xl font-semibold text-[var(--color-fg-primary)]" }, title),
+      el("p", { class: "text-base text-[var(--color-fg-muted)]" }, body),
+      el(
+        "a",
+        {
+          href: "#/",
+          class: "inline-block text-sm font-medium text-[var(--color-sev-caution)] underline",
+        },
+        "← Back to combo planner",
+      ),
+    ),
   );
+}
 
-  wrap.append(emergencyBtn, callBtn);
-  target.append(wrap);
+function renderRoute(route: ParsedRoute): void {
+  switch (route.kind) {
+    case "home":
+    case "combo": {
+      const incoming = route.kind === "combo" ? route.substances : [];
+      const same =
+        incoming.length === state.selection.length &&
+        incoming.every((s, i) => s === state.selection[i]);
+      if (!same) {
+        state.selection = [...incoming];
+      }
+      renderHome();
+      break;
+    }
+    case "drug":
+      renderPlaceholder(
+        `${state.dataset?.[route.substance]?.pretty_name ?? route.substance} — factsheet`,
+        "Per-substance factsheet pages land in M4. They will show dose ranges, duration, onset, harm-reduction tips, and links to upstream sources.",
+      );
+      break;
+    case "emergency":
+      renderPlaceholder(
+        "Emergency",
+        "The full emergency view (signs of overdose, recovery position diagram, regional hotlines) lands in M5. In an emergency right now: call 911 (US) / 112 (EU) / 999 (UK) / 000 (AU).",
+      );
+      break;
+    case "about":
+      renderPlaceholder(
+        "About partysafe",
+        "License (CC BY-NC-SA 4.0), attribution to TripSit and other harm-reduction sources, and the full disclaimer land in M5. For now see ATTRIBUTION.md and DISCLAIMER.md in the repo.",
+      );
+      break;
+    case "unknown":
+      renderPlaceholder(
+        "Not found",
+        `That route doesn't match anything I know how to render. Hash was: ${route.raw}`,
+      );
+      break;
+  }
+}
+
+function onSelectionChange(slugs: SubstanceSlug[]): void {
+  state.selection = slugs;
+  // Update the URL without polluting history (Eng E5 picker change rule).
+  navigate(
+    slugs.length === 0
+      ? { kind: "home" }
+      : { kind: "combo", substances: slugs, warnings: [] },
+    { replace: true },
+  );
+  renderCombo();
 }
 
 function mount(): void {
-  const topBar = document.getElementById("top-bar-mount");
-  const app = document.getElementById("app");
-  const emergencyBar = document.getElementById("emergency-bar-mount");
-  if (!topBar || !app || !emergencyBar) {
-    // eslint-disable-next-line no-console
+  const topBarMount = document.getElementById("top-bar-mount");
+  const appMount = document.getElementById("app");
+  const emergencyMount = document.getElementById("emergency-bar-mount");
+  if (!topBarMount || !appMount || !emergencyMount) {
     console.error("partysafe: required mount points missing in index.html");
     return;
   }
-  renderTopBar(topBar);
-  renderPlaceholderApp(app);
-  renderEmergencyBar(emergencyBar);
+
+  replace(topBarMount, createTopBar());
+
+  const lang = typeof navigator !== "undefined" ? navigator.language : undefined;
+  replace(emergencyMount, createEmergencyActionBar(lang));
+
+  picker = createSubstancePicker({ onSelectionChange });
+  banner = createComboBanner();
+  grid = createComboGrid({
+    onTileClick: (pair) => renderInlineExpansion(pair),
+  });
+  comboSection = el("div", { class: "mx-auto max-w-2xl px-4 py-6 space-y-4" });
+  mechanismExpansionMount = el("div", {});
+
+  replace(appMount, comboSection);
+  renderRoute(currentRoute());
+  subscribe(renderRoute);
+
+  // Kick off data load in the background. UI shows shells until it resolves.
+  loadAll()
+    .then((data) => {
+      state.dataset = data.dataset;
+      state.mechanisms = data.mechanisms;
+      state.overrides = data.overrides;
+      picker.setDataset(data.dataset);
+      // Re-render the current route now that data is available.
+      renderRoute(currentRoute());
+    })
+    .catch((err) => {
+      console.error("partysafe: failed to load data", err);
+      replace(
+        appMount,
+        el(
+          "div",
+          { class: "mx-auto max-w-2xl px-4 py-12 text-center space-y-3" },
+          el(
+            "h1",
+            { class: "text-xl font-semibold text-[var(--color-sev-unsafe)]" },
+            "Data failed to load",
+          ),
+          el(
+            "p",
+            { class: "text-sm text-[var(--color-fg-muted)]" },
+            "Reload the page. If the problem persists, the site assets may be missing.",
+          ),
+        ),
+      );
+    });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", mount);
-} else {
-  mount();
+// Avoid running mount() during SSR / test environments.
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
+  }
 }
+
+// Re-export bits of the public API for the eventual debug surface and tests.
+export { parseRoute, serializeRoute, currentRoute, navigate };
