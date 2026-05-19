@@ -138,6 +138,21 @@
       transparent 12px
     );
   }
+
+  /* Body scroll lock while the mechanism sheet is open (Design D5). */
+  body.ps-sheet-open {
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  /* Line-clamp utility for combo tile summaries (Tailwind v4 provides this
+   * via @plugin but inline definition is smaller). */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 /*

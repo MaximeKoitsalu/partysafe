@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-05-19T08:30:00Z",
+  "generated_at": "2026-05-19T09:00:00Z",
   "entries": [
     {
       "id": "depressant-opioid-dangerous",
@@ -8,7 +8,7 @@
       "severity": "Dangerous",
       "locales": {
         "en": {
-          "mechanism_prose": "Both substances suppress the brainstem reflexes that drive breathing. Combined, the effect compounds: respiratory depression that either substance alone might not cause becomes lethal. Sedation also stacks, making it harder to notice when breathing is failing.",
+          "mechanism_prose": "Both substances suppress the brainstem reflexes that drive breathing. Combined, the effect compounds — respiratory depression that either alone might not cause becomes lethal. Sedation also stacks, so the person stops noticing they are in trouble before breathing fails. This is the most common cause of accidental overdose deaths in the US and Europe.",
           "warning_signs": [
             "Slow, shallow, or stopped breathing",
             "Blue or gray lips, fingertips, or skin",
@@ -17,22 +17,27 @@
             "Cold, clammy skin"
           ],
           "first_aid": [
-            "Call 911 immediately",
-            "Place them in recovery position (on left side, top knee bent, head tilted)",
-            "If naloxone is available and an opioid is involved, administer it",
-            "Stay with them; rescue breathing if trained"
+            "Call 911 / 112 immediately — do not wait to see if it gets better",
+            "Place them in recovery position (on their side, top knee bent, head tilted)",
+            "If naloxone (Narcan) is available, give it; repeat every 2-3 minutes if no response",
+            "Stay with them and rescue breathe if trained — call 911 back if they stop breathing"
           ]
         }
       },
       "sources": [
         {
-          "source": "TripSit",
-          "url": "https://wiki.tripsit.me/wiki/Drug_combinations",
+          "source": "CDC — Opioid Overdose Prevention",
+          "url": "https://www.cdc.gov/overdose-prevention/index.html",
           "accessed_at": "2026-05-19"
         },
         {
-          "source": "CDC — Opioid Overdose",
-          "url": "https://www.cdc.gov/opioids/overdoseprevention/index.html",
+          "source": "NHS — Overdose response",
+          "url": "https://www.nhs.uk/conditions/overdose/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit drug combinations chart",
+          "url": "https://wiki.tripsit.me/wiki/Drug_combinations",
           "accessed_at": "2026-05-19"
         }
       ],
@@ -45,26 +50,368 @@
       "severity": "Caution",
       "locales": {
         "en": {
-          "mechanism_prose": "Stimulants mask the dissociative effects of substances like ketamine, making it easy to redose ketamine to risky levels. Stimulant-driven hyperthermia and cardiovascular load compound with dissociation-driven loss of body awareness, raising injury and overheating risk.",
+          "mechanism_prose": "The stimulant masks dissociative effects, making it easy to redose the dissociative to risky levels. Stimulant-driven hyperthermia and cardiovascular load compound with dissociation-driven loss of body awareness — the person feels alert but cannot judge their own state. Hospital admissions for this combination cluster around redose accidents and overheating, not direct toxicity.",
           "warning_signs": [
-            "Hot, dry skin or rising body temperature",
+            "Hot or dry skin, rising body temperature",
             "Confusion or sudden disorientation",
             "Loss of motor control or coordination",
-            "Rapid heartbeat that doesn't settle",
+            "Rapid heartbeat that does not settle",
             "Difficulty breathing"
           ],
           "first_aid": [
-            "Move to a cool, quiet space",
-            "Hydrate slowly with water, not electrolyte rush",
-            "Do NOT give more of either substance",
-            "If unresponsive or breathing changes: call 911"
+            "Move to a cool, quiet space and reduce stimulation",
+            "Hydrate slowly with water, not energy drinks",
+            "Do not give more of either substance — wait it out",
+            "Stay with them; call 911 / 112 if unresponsive or breathing changes"
           ]
         }
       },
       "sources": [
         {
-          "source": "TripSit",
+          "source": "DanceSafe — Combo information",
+          "url": "https://dancesafe.org/drug-information/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "PsychonautWiki — Ketamine",
+          "url": "https://psychonautwiki.org/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Ketamine",
           "url": "https://wiki.tripsit.me/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "depressant-depressant-dangerous",
+      "category_pattern": "depressant+depressant",
+      "severity": "Dangerous",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Stacking two depressants compounds central nervous system suppression. The body slows breathing, heart rate, and gag reflex in ways that either substance alone would not. The risk window is also longer than people expect: an extra drink hours after a GHB dose can tip a manageable state into unconsciousness and aspiration. Vomiting while unconscious is a common cause of death here.",
+          "warning_signs": [
+            "Confusion that quickly becomes unconsciousness",
+            "Slow, shallow, or noisy breathing",
+            "Inability to wake the person",
+            "Vomiting while unresponsive",
+            "Cold or blue skin"
+          ],
+          "first_aid": [
+            "Call 911 / 112 immediately — do not assume they will sleep it off",
+            "Place them in recovery position so vomit can drain, not block airway",
+            "Stay with them and watch breathing; do not give coffee or cold showers",
+            "Keep calling 911 if breathing stops — start rescue breaths if trained"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "NHS — Alcohol poisoning",
+          "url": "https://www.nhs.uk/conditions/alcohol-poisoning/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "DanceSafe — GHB",
+          "url": "https://dancesafe.org/drug-information/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — GHB",
+          "url": "https://wiki.tripsit.me/wiki/GHB",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "depressant-dissociative-unsafe",
+      "category_pattern": "depressant+dissociative",
+      "severity": "Unsafe",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Alcohol and similar depressants reduce protective reflexes; dissociatives reduce body awareness and motor control. The two together produce a state where the person cannot judge their position, cannot reliably swallow, and may pass out without warning. Common harms are falls, aspiration of vomit, and respiratory depression. Cold water and bathtubs are especially dangerous in this state.",
+          "warning_signs": [
+            "Falls, stumbling, or inability to stand",
+            "Slurred speech that progresses to silence",
+            "Vomiting while drowsy",
+            "Blue lips or cold skin",
+            "Unresponsive to voice or pain"
+          ],
+          "first_aid": [
+            "Move them away from water, stairs, and open windows",
+            "Place in recovery position so they cannot aspirate",
+            "Stay with them — do not let them bathe or shower alone",
+            "Call 911 / 112 if unresponsive, breathing changes, or you cannot wake them"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "PsychonautWiki — Ketamine + Depressants",
+          "url": "https://psychonautwiki.org/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "DanceSafe — Ketamine",
+          "url": "https://dancesafe.org/drug-information/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Ketamine + Alcohol",
+          "url": "https://wiki.tripsit.me/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "empathogen-ssri-dangerous",
+      "category_pattern": "empathogen+ssri",
+      "severity": "Dangerous",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Both substances push serotonin levels high. Stacking them can trigger serotonin syndrome — a runaway state of hyperthermia, agitation, muscle rigidity, and clonus that can be fatal within hours. Tramadol is especially risky here because it is both an opioid and a serotonin reuptake inhibitor. Onset is sometimes delayed by several hours from the last dose, so the person may feel fine before getting worse.",
+          "warning_signs": [
+            "High body temperature, sweating",
+            "Tremors, twitching, or muscle stiffness",
+            "Agitation, confusion, or hallucinations",
+            "Fast heart rate, high blood pressure",
+            "Dilated pupils, diarrhea"
+          ],
+          "first_aid": [
+            "Call 911 / 112 — serotonin syndrome is a medical emergency",
+            "Move to a cool place and remove extra clothing to reduce body temperature",
+            "Do not give any more substances, including caffeine or other stimulants",
+            "Stay with them and keep calling 911 if symptoms get worse"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "DanceSafe — MDMA + SSRIs",
+          "url": "https://dancesafe.org/mdma/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "NHS — Serotonin syndrome",
+          "url": "https://www.nhs.uk/conditions/serotonin-syndrome/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "PsychonautWiki — Serotonin syndrome",
+          "url": "https://psychonautwiki.org/wiki/Serotonin_syndrome",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "depressant-stimulant-caution",
+      "category_pattern": "depressant+stimulant",
+      "severity": "Caution",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Stimulants mask the sedating effect of depressants, so people drink or dose more than they would otherwise. Cocaine plus alcohol also produces cocaethylene in the liver, a metabolite that lasts longer than cocaine and is harder on the heart. The cardiovascular risk is higher than either substance alone, and the impairment is harder to feel coming because the stimulant hides it.",
+          "warning_signs": [
+            "Drinking far more than usual without feeling drunk",
+            "Chest pain, racing heart, or pounding pulse",
+            "Confusion or sudden mood shifts",
+            "Becoming suddenly very drunk when the stimulant wears off"
+          ],
+          "first_aid": [
+            "Stop drinking and sit somewhere cool and quiet",
+            "Drink water slowly — not coffee or energy drinks",
+            "Watch for chest pain or trouble breathing; call 911 / 112 if either appears",
+            "Stay with them through the comedown — the depressant hits harder when the stimulant fades"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "NIDA — Cocaine and alcohol (cocaethylene)",
+          "url": "https://nida.nih.gov/publications/research-reports/cocaine",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "DanceSafe — Cocaine",
+          "url": "https://dancesafe.org/drug-information/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Cocaine + Alcohol",
+          "url": "https://wiki.tripsit.me/wiki/Cocaine",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "stimulant-stimulant-caution",
+      "category_pattern": "stimulant+stimulant",
+      "severity": "Caution",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Two stimulants stack the load on the heart and the body's heat regulation. Heart rate, blood pressure, and body temperature climb together. The user feels alert and capable, but the cardiovascular strain is invisible from the inside. Dehydration and overheating are the most common harms; cardiac events, while rarer, can happen in people with no prior diagnosis when stimulant doses stack.",
+          "warning_signs": [
+            "Chest pain, pressure, or pounding heartbeat",
+            "Skin that is hot and dry rather than sweating",
+            "Severe headache or vision changes",
+            "Jaw clenching, jitter, or tremor that does not settle"
+          ],
+          "first_aid": [
+            "Move to a cool place and reduce activity — no dancing",
+            "Sip water slowly to rehydrate without flooding",
+            "Do not redose to chase the feeling — the next dose stacks the load",
+            "If chest pain, trouble breathing, or confusion appear, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "DanceSafe — Stimulant safety",
+          "url": "https://dancesafe.org/drug-information/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "Erowid — Stimulant interactions",
+          "url": "https://www.erowid.org/chemicals/mdma/mdma.shtml",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — MDMA combinations",
+          "url": "https://wiki.tripsit.me/wiki/MDMA",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "dissociative-dissociative-unsafe",
+      "category_pattern": "dissociative+dissociative",
+      "severity": "Unsafe",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Stacking dissociatives compounds loss of body awareness, motor control, and consciousness. The k-hole or equivalent state arrives faster and is harder to come out of. Vomiting risk is high; aspiration risk is higher because protective reflexes drop too. Long-acting dissociatives like DXM extend the window during which a second dose can stack into a much deeper state.",
+          "warning_signs": [
+            "Falling, inability to stand or hold position",
+            "Vomiting while drowsy or unresponsive",
+            "Loss of voice, frozen breathing pauses",
+            "Cold or pale skin",
+            "Unresponsive to voice"
+          ],
+          "first_aid": [
+            "Move them to a flat, padded space — no stairs, no water",
+            "Place in recovery position to keep airway clear",
+            "Stay with them; do not let them get up alone",
+            "Call 911 / 112 if breathing pauses, vomit blocks airway, or you cannot wake them"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "PsychonautWiki — Dissociatives",
+          "url": "https://psychonautwiki.org/wiki/Dissociative",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "Erowid — Ketamine + DXM",
+          "url": "https://www.erowid.org/chemicals/ketamine/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Dissociative combinations",
+          "url": "https://wiki.tripsit.me/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "depressant-psychedelic-caution",
+      "category_pattern": "depressant+psychedelic",
+      "severity": "Caution",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Depressants blunt the body but not the head trip — the result is a person who looks fine to others while struggling internally, or one who suddenly stumbles into a worse state when the depressant peaks. Cannabis on a psychedelic peak often triggers anxiety spirals and dissociation that the trip alone would not. Alcohol increases nausea and impairs the user's ability to ground themselves.",
+          "warning_signs": [
+            "Sudden anxiety, panic, or dissociation during a trip",
+            "Falling or stumbling while otherwise looking calm",
+            "Vomiting that the person cannot manage",
+            "Inability to follow simple instructions"
+          ],
+          "first_aid": [
+            "Move to a quiet, dim, familiar space",
+            "Speak calmly and reassure — bad trips often resolve with grounding",
+            "Hydrate slowly; offer something soft to eat",
+            "If they cannot be reached or show signs of physical distress, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "MAPS — Psychedelic harm reduction",
+          "url": "https://maps.org/our-research/psychedelic-harm-reduction/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "PsychonautWiki — Cannabis",
+          "url": "https://psychonautwiki.org/wiki/Cannabis",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Cannabis combinations",
+          "url": "https://wiki.tripsit.me/wiki/Cannabis",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "dissociative-psychedelic-caution",
+      "category_pattern": "dissociative+psychedelic",
+      "severity": "Caution",
+      "locales": {
+        "en": {
+          "mechanism_prose": "The combination of dissociative and psychedelic effects (sometimes called candyflipping with ketamine plus LSD) can produce strong ego dissolution and disorientation that either substance alone would not. Body coordination drops while perception becomes more vivid, which raises injury risk. People often underestimate the dissociative dose because the psychedelic is doing the heavy lifting on perception. Difficult psychological experiences are common.",
+          "warning_signs": [
+            "Severe disorientation or inability to locate body",
+            "Sudden panic or paranoia",
+            "Falling or being unable to stand",
+            "Difficulty recognizing trusted people"
+          ],
+          "first_aid": [
+            "Move to a flat, padded space and reduce sensory input",
+            "Stay with them and speak calmly — do not try to logically argue",
+            "Do not redose either substance",
+            "If they cannot be reached, are physically unwell, or you are scared, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "MAPS — Psychedelic + Ketamine",
+          "url": "https://maps.org/",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "PsychonautWiki — Ketamine + LSD",
+          "url": "https://psychonautwiki.org/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "TripSit — Ketamine + LSD",
+          "url": "https://wiki.tripsit.me/wiki/LSD",
           "accessed_at": "2026-05-19"
         }
       ],

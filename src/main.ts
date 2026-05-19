@@ -17,10 +17,10 @@ import { createEmergencyActionBar } from "./components/EmergencyActionBar.ts";
 import { createSubstancePicker, type SubstancePickerHandle } from "./components/SubstancePicker.ts";
 import { createComboBanner, type ComboBannerHandle } from "./components/ComboBanner.ts";
 import { createComboGrid, type ComboGridHandle } from "./components/ComboGrid.ts";
+import { createMechanismSheet, type MechanismSheetHandle } from "./components/MechanismSheet.ts";
 import { loadAll } from "./data/load.ts";
 import { el, replace } from "./lib/dom.ts";
 import { pairwiseRisksFor } from "./lib/combo.ts";
-import { tokenFor } from "./lib/severity.ts";
 import {
   currentRoute,
   navigate,
@@ -49,8 +49,8 @@ const state: AppState = { selection: [] };
 let picker: SubstancePickerHandle;
 let banner: ComboBannerHandle;
 let grid: ComboGridHandle;
+let sheet: MechanismSheetHandle;
 let comboSection: HTMLElement;
-let mechanismExpansionMount: HTMLElement;
 
 function computeAnalysis(): ComboAnalysis | undefined {
   if (!state.dataset || !state.mechanisms) return undefined;
@@ -66,128 +66,9 @@ function renderCombo(): void {
   const analysis = computeAnalysis();
   banner.update(analysis, state.selection.length);
   grid.update(analysis, state.dataset);
-  // Clear any inline expansion when selection changes.
-  replace(mechanismExpansionMount);
-}
-
-/** Inline mechanism expansion used as a placeholder until the M3 bottom sheet ships. */
-function renderInlineExpansion(pair: PairwiseRisk): void {
-  if (!pair.mechanism && !pair.upstream_note) {
-    replace(
-      mechanismExpansionMount,
-      el(
-        "div",
-        {
-          class:
-            "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-fg-muted)]",
-        },
-        "No mechanism content available for this pair yet. See per-substance pages on the main TripSit site for context.",
-      ),
-    );
-    return;
-  }
-
-  const a = state.dataset?.[pair.a]?.pretty_name ?? pair.a;
-  const b = state.dataset?.[pair.b]?.pretty_name ?? pair.b;
-  const sev = pair.severity;
-  const t = sev ? tokenFor(sev) : undefined;
-  const content = pair.mechanism?.locales.en;
-
-  const sections: HTMLElement[] = [
-    el(
-      "header",
-      { class: "space-y-1" },
-      el("h2", { class: "text-xl font-semibold text-[var(--color-fg-primary)]" }, `${a} + ${b}`),
-      t
-        ? el(
-            "p",
-            {
-              class: "text-sm font-medium",
-              style: `color: var(${t.cssVar});`,
-            },
-            t.label,
-          )
-        : undefined,
-      t
-        ? el(
-            "p",
-            { class: "text-xs italic text-[var(--color-fg-muted)]" },
-            t.qualifier,
-          )
-        : undefined,
-    ),
-  ];
-
-  if (content) {
-    sections.push(
-      el(
-        "div",
-        { class: "space-y-3" },
-        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "What's happening"),
-        el("p", { class: "text-base text-[var(--color-fg-primary)] leading-relaxed" }, content.mechanism_prose),
-      ),
-    );
-    sections.push(
-      el(
-        "div",
-        { class: "space-y-2" },
-        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "Watch for"),
-        el(
-          "ul",
-          { class: "list-disc list-inside space-y-1 text-base text-[var(--color-fg-primary)]" },
-          ...content.warning_signs.map((s) => el("li", {}, s)),
-        ),
-      ),
-    );
-    sections.push(
-      el(
-        "div",
-        { class: "space-y-2" },
-        el("h3", { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" }, "First aid"),
-        el(
-          "ol",
-          { class: "list-decimal list-inside space-y-1 text-base text-[var(--color-fg-primary)]" },
-          ...content.first_aid.map((s) => el("li", {}, s)),
-        ),
-      ),
-    );
-  } else if (pair.upstream_note) {
-    sections.push(
-      el(
-        "div",
-        { class: "space-y-3" },
-        el(
-          "h3",
-          { class: "text-sm font-semibold text-[var(--color-fg-muted)] uppercase tracking-wide" },
-          "From TripSit upstream",
-        ),
-        el(
-          "p",
-          { class: "text-base text-[var(--color-fg-primary)] leading-relaxed" },
-          pair.upstream_note,
-        ),
-        el(
-          "p",
-          { class: "text-xs italic text-[var(--color-fg-muted)]" },
-          "partysafe-authored mechanism content for this pair has not been written yet. The above is TripSit's upstream note.",
-        ),
-      ),
-    );
-  }
-
-  replace(
-    mechanismExpansionMount,
-    el(
-      "section",
-      {
-        class:
-          "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 space-y-4",
-        role: "region",
-        "aria-label": "Mechanism details",
-      },
-      ...sections,
-    ),
-  );
+  // Close sheet whenever selection changes — the previously open mechanism no
+  // longer matches the current grid.
+  if (sheet?.isOpen()) sheet.close();
 }
 
 function renderHome(): void {
@@ -200,7 +81,6 @@ function renderHome(): void {
       picker.element,
     ),
     grid.element,
-    mechanismExpansionMount,
   );
   renderCombo();
 }
@@ -297,13 +177,15 @@ function mount(): void {
 
   picker = createSubstancePicker({ onSelectionChange });
   banner = createComboBanner();
+  sheet = createMechanismSheet();
   grid = createComboGrid({
-    onTileClick: (pair) => renderInlineExpansion(pair),
+    onTileClick: (pair: PairwiseRisk) => sheet.open(pair, state.dataset),
   });
   comboSection = el("div", { class: "mx-auto max-w-2xl px-4 py-6 space-y-4" });
-  mechanismExpansionMount = el("div", {});
 
   replace(appMount, comboSection);
+  // Mount the sheet at the body level so it overlays the entire viewport.
+  document.body.appendChild(sheet.element);
   renderRoute(currentRoute());
   subscribe(renderRoute);
 
