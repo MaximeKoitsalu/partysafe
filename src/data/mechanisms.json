@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-05-19T08:30:00Z",
+  "entries": [
+    {
+      "id": "depressant-opioid-dangerous",
+      "category_pattern": "depressant+opioid",
+      "severity": "Dangerous",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Both substances suppress the brainstem reflexes that drive breathing. Combined, the effect compounds: respiratory depression that either substance alone might not cause becomes lethal. Sedation also stacks, making it harder to notice when breathing is failing.",
+          "warning_signs": [
+            "Slow, shallow, or stopped breathing",
+            "Blue or gray lips, fingertips, or skin",
+            "Unresponsive to shouting or shaking",
+            "Gurgling, choking, or snoring sounds",
+            "Cold, clammy skin"
+          ],
+          "first_aid": [
+            "Call 911 immediately",
+            "Place them in recovery position (on left side, top knee bent, head tilted)",
+            "If naloxone is available and an opioid is involved, administer it",
+            "Stay with them; rescue breathing if trained"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "TripSit",
+          "url": "https://wiki.tripsit.me/wiki/Drug_combinations",
+          "accessed_at": "2026-05-19"
+        },
+        {
+          "source": "CDC — Opioid Overdose",
+          "url": "https://www.cdc.gov/opioids/overdoseprevention/index.html",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    },
+    {
+      "id": "dissociative-stimulant-caution",
+      "category_pattern": "dissociative+stimulant",
+      "severity": "Caution",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Stimulants mask the dissociative effects of substances like ketamine, making it easy to redose ketamine to risky levels. Stimulant-driven hyperthermia and cardiovascular load compound with dissociation-driven loss of body awareness, raising injury and overheating risk.",
+          "warning_signs": [
+            "Hot, dry skin or rising body temperature",
+            "Confusion or sudden disorientation",
+            "Loss of motor control or coordination",
+            "Rapid heartbeat that doesn't settle",
+            "Difficulty breathing"
+          ],
+          "first_aid": [
+            "Move to a cool, quiet space",
+            "Hydrate slowly with water, not electrolyte rush",
+            "Do NOT give more of either substance",
+            "If unresponsive or breathing changes: call 911"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "source": "TripSit",
+          "url": "https://wiki.tripsit.me/wiki/Ketamine",
+          "accessed_at": "2026-05-19"
+        }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-19"
+    }
+  ]
+}
