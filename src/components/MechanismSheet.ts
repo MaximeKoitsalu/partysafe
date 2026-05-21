@@ -42,16 +42,33 @@ function renderContent(pair: PairwiseRisk, dataset: LeanDataset | undefined): HT
 
   const sections: HTMLElement[] = [];
 
+  const commonName = pair.mechanism?.common_name;
+
   // Header: combo title + severity chip + mandatory qualifier (always together)
   sections.push(
     el(
       "header",
       { class: "space-y-2" },
-      el(
-        "h2",
-        { class: "text-2xl font-semibold text-[var(--color-fg-primary)] leading-tight" },
-        `${a} + ${b}`,
-      ),
+      commonName
+        ? el(
+            "div",
+            { class: "space-y-0.5" },
+            el(
+              "h2",
+              { class: "text-2xl font-semibold text-[var(--color-fg-primary)] leading-tight" },
+              commonName,
+            ),
+            el(
+              "p",
+              { class: "text-sm text-[var(--color-fg-muted)]" },
+              `${a} + ${b}`,
+            ),
+          )
+        : el(
+            "h2",
+            { class: "text-2xl font-semibold text-[var(--color-fg-primary)] leading-tight" },
+            `${a} + ${b}`,
+          ),
       t
         ? el(
             "div",

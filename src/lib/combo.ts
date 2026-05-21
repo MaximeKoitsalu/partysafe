@@ -53,7 +53,21 @@ export type OverrideEntry = {
 export function indexMechanisms(file: MechanismFile): Map<string, MechanismEntry> {
   const map = new Map<string, MechanismEntry>();
   for (const e of file.entries) {
+    if (e.pair) continue; // pair-specific entries live in the pair index
     map.set(`${e.category_pattern}|${e.severity}`, e);
+  }
+  return map;
+}
+
+/**
+ * Build the pair-specific index keyed by the ordered slug pair (e.g. "lsd+mdma").
+ * These entries (named festival combos like candyflip) win over the generic
+ * category-pattern match for that exact pair.
+ */
+export function indexPairMechanisms(file: MechanismFile): Map<string, MechanismEntry> {
+  const map = new Map<string, MechanismEntry>();
+  for (const e of file.entries) {
+    if (e.pair) map.set(e.pair, e);
   }
   return map;
 }
@@ -102,11 +116,18 @@ function readUpstreamCombo(
 
 function lookupMechanism(
   mechIndex: Map<string, MechanismEntry>,
+  pairIndex: Map<string, MechanismEntry>,
   a: SubstanceSlug,
   b: SubstanceSlug,
   dataset: LeanDataset,
   severity: Severity | undefined,
 ): MechanismEntry | undefined {
+  // Pair-specific entry (named festival combos) wins, regardless of severity —
+  // it IS the content for this exact pair (e.g. candyflip is Synergy, which no
+  // generic risky-tier entry would match).
+  const pairHit = pairIndex.get(pairKey(a, b));
+  if (pairHit) return pairHit;
+
   if (!severity) return undefined;
   const subA = dataset[a];
   const subB = dataset[b];
@@ -187,6 +208,7 @@ export function pairwiseRisksFor(
   inputs: ComboInputs,
 ): ComboAnalysis {
   const mechIndex = indexMechanisms(inputs.mechanisms);
+  const pairIndex = indexPairMechanisms(inputs.mechanisms);
   const overrideIndex = inputs.overrides ? indexOverrides(inputs.overrides) : undefined;
 
   const pairs: PairwiseRisk[] = [];
@@ -197,7 +219,7 @@ export function pairwiseRisksFor(
       if (!a || !b) continue;
       const upstream = readUpstreamCombo(inputs.dataset, a, b);
       const { severity, override } = applyOverride(overrideIndex, a, b, upstream.status);
-      const mechanism = lookupMechanism(mechIndex, a, b, inputs.dataset, severity);
+      const mechanism = lookupMechanism(mechIndex, pairIndex, a, b, inputs.dataset, severity);
       const pair: PairwiseRisk = {
         a,
         b,

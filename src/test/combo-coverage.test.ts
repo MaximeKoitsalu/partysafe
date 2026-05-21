@@ -53,19 +53,23 @@ describe("known pairs resolve correct severity + mechanism", () => {
   }
 });
 
-describe("low-risk pairs are NOT force-fitted to a danger mechanism", () => {
-  test("mdma + ketamine is Low Risk & Synergy and shows no scary mechanism", () => {
+describe("low-risk pairs: pair-specific content OK, generic danger content NOT", () => {
+  test("mdma + ketamine (kitty flip) gets its pair-specific Synergy entry, not a risky generic one", () => {
     const r = analyze("mdma", "ketamine");
     const pair = r.pairs[0];
     expect(pair?.severity).toBe("Low Risk & Synergy" as never);
-    // No risky-severity mechanism should be attached to a synergy pair.
-    expect(pair?.mechanism).toBeUndefined();
+    // It DOES get a mechanism now — but the named pair entry, whose own
+    // severity matches the (synergy) rating, never a Dangerous/Unsafe generic.
+    expect(pair?.mechanism?.pair).toBe("ketamine+mdma");
+    expect(pair?.mechanism?.common_name).toBe("Kitty flip");
+    expect(["Caution", "Unsafe", "Dangerous"]).not.toContain(pair?.mechanism?.severity);
   });
 
-  test("alcohol + cannabis is Low Risk & Synergy (no respiratory-depression alarm)", () => {
+  test("alcohol + cannabis (no pair entry) stays on the upstream note — no danger force-fit", () => {
     const r = analyze("alcohol", "cannabis");
     const pair = r.pairs[0];
     expect(pair?.severity).toBe("Low Risk & Synergy" as never);
+    // No pair entry authored and no generic Synergy entry → upstream note only.
     expect(pair?.mechanism).toBeUndefined();
   });
 });
@@ -103,8 +107,24 @@ describe("mechanism coverage of risky pairs stays above floor", () => {
     }
   });
 
-  test("no duplicate (pattern, severity) keys", () => {
-    const keys = mf.entries.map((e) => `${e.category_pattern}|${e.severity}`);
+  test("no duplicate (pattern, severity) keys among GENERIC entries", () => {
+    // Pair-specific entries are exempt — a named override (e.g. candyflip) may
+    // share a (pattern, severity) with the generic entry it overrides.
+    const generic = mf.entries.filter((e) => !e.pair);
+    const keys = generic.map((e) => `${e.category_pattern}|${e.severity}`);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  test("no duplicate pair keys among pair-specific entries", () => {
+    const pairs = mf.entries.filter((e) => e.pair).map((e) => e.pair!);
+    expect(new Set(pairs).size).toBe(pairs.length);
+  });
+
+  test("pair entries use lexicographically-ordered slugs", () => {
+    for (const e of mf.entries) {
+      if (!e.pair) continue;
+      const [x, y] = e.pair.split("+");
+      expect(x! <= y!, `${e.pair} must be ordered`).toBe(true);
+    }
   });
 });

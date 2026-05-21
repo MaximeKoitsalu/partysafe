@@ -555,6 +555,286 @@
       ],
       "reviewed_by": [],
       "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-lsd-mdma-candyflip",
+      "category_pattern": "psychedelic+stimulant",
+      "severity": "Low Risk & Synergy",
+      "pair": "lsd+mdma",
+      "common_name": "Candyflip",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Candyflipping layers MDMA's warmth and empathy onto the LSD headspace — users report a richer, more emotional, more 'layered' trip. A common approach is LSD first, then MDMA around the LSD peak (about 4 hours in). There are no clinical studies; everything known is anecdotal. It is almost certainly harder on the body than MDMA alone, and the MDMA can make an intense trip harder to steer.",
+          "warning_signs": [
+            "Overheating or dehydration",
+            "Anxiety spiraling into a difficult trip",
+            "Jaw clenching, fast heartbeat",
+            "Wanting to keep redosing the MDMA"
+          ],
+          "first_aid": [
+            "Stay somewhere calm with people you trust",
+            "Sip water steadily — don't chug, don't binge",
+            "Skip extra MDMA doses; one moderate dose is the safer play",
+            "If overheating, chest pain, or a frightening state won't settle, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "Erowid — Candyflip (LSD+MDMA)", "url": "https://www.erowid.org/archive/psychonaut/lsd/lsd13.htm", "accessed_at": "2026-05-21" },
+        { "source": "DoubleBlind — Candy Flipping", "url": "https://doubleblindmag.com/mushrooms/tripping-combining-drugs/candy-flipping-acid-and-molly/", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — LSD", "url": "https://wiki.tripsit.me/wiki/LSD", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-mdma-mushrooms-hippieflip",
+      "category_pattern": "psychedelic+stimulant",
+      "severity": "Low Risk & Synergy",
+      "pair": "mdma+mushrooms",
+      "common_name": "Hippie flip",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Hippie flipping pairs psilocybin mushrooms with MDMA, reported to give strong euphoria, visuals, and emotional openness. Both raise serotonin, so stacking them adds serotonin-overload and overheating risk on top of the usual mushroom nausea and the chance of a difficult headspace. Effects depend heavily on timing and on mushroom potency, which varies a lot.",
+          "warning_signs": [
+            "Nausea, especially as the mushrooms come up",
+            "Anxiety, paranoia, or a bad trip",
+            "Overheating, heavy sweating, fast heart rate",
+            "Confusion or feeling overwhelmed"
+          ],
+          "first_aid": [
+            "Move somewhere calm, dim, and familiar; bring a trusted person",
+            "Hydrate slowly; let nausea pass before eating",
+            "Reassure and ground — most difficult trips ease with calm company",
+            "If body temperature climbs, the heart races, or panic won't settle, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "DoubleBlind — Hippie Flipping", "url": "https://doubleblindmag.com/mushrooms/tripping-combining-drugs/hippie-flipping-mdma-and-mushrooms/", "accessed_at": "2026-05-21" },
+        { "source": "NHS — Serotonin syndrome", "url": "https://www.nhs.uk/conditions/serotonin-syndrome/", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — Mushrooms", "url": "https://wiki.tripsit.me/wiki/Mushrooms", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-ketamine-mdma-kittyflip",
+      "category_pattern": "dissociative+stimulant",
+      "severity": "Low Risk & Synergy",
+      "pair": "ketamine+mdma",
+      "common_name": "Kitty flip",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Kitty flipping mixes ketamine's dissociation with MDMA's euphoria. The MDMA masks how deep the ketamine is taking you, so it's easy to redose ketamine into a hole and lose coordination or pass out somewhere unsafe. MDMA raises heart rate and temperature; ketamine adds falls and aspiration risk. There is no reliable 'low' dose — small amounts can amplify unpredictably. Ketamine overdose is NOT reversed by naloxone.",
+          "warning_signs": [
+            "Falling, losing motor control, or a 'k-hole'",
+            "Overheating, racing heart",
+            "Vomiting while drowsy",
+            "Redosing ketamine because you can't feel it"
+          ],
+          "first_aid": [
+            "Sit or lie down somewhere safe, away from water and stairs",
+            "If drowsy, lie on your side so you can't choke on vomit",
+            "Do not redose; do not add alcohol or other depressants",
+            "If unresponsive, breathing changes, or you can't wake them, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "DoubleBlind — Kitty Flipping", "url": "https://doubleblindmag.com/what-is-kitty-flipping-the-101-on-mixing-ketamine-and-mdma/", "accessed_at": "2026-05-21" },
+        { "source": "Psychology Today — Kitty Flipping", "url": "https://www.psychologytoday.com/us/blog/addiction-outlook/202509/kitty-flipping-ketamine-and-mdma-stimulant-combinations", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — Ketamine", "url": "https://wiki.tripsit.me/wiki/Ketamine", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-ketamine-lsd",
+      "category_pattern": "dissociative+psychedelic",
+      "severity": "Low Risk & Synergy",
+      "pair": "ketamine+lsd",
+      "common_name": "LSD + ketamine",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Ketamine on an LSD trip deepens dissociation and can produce strong ego-dissolution that neither gives alone. Perception intensifies while body control drops, which raises injury risk and makes it easy to misjudge the ketamine dose because the LSD is doing the heavy lifting. People often describe it as overwhelming if doses aren't kept modest.",
+          "warning_signs": [
+            "Severe disorientation or loss of body sense",
+            "Falling or being unable to stand",
+            "Sudden panic or paranoia",
+            "Vomiting while drowsy"
+          ],
+          "first_aid": [
+            "Move to a flat, padded, calm space and reduce sensory input",
+            "Stay with them; don't try to argue them out of a headspace",
+            "Keep ketamine doses small and don't redose blindly",
+            "If unresponsive or physically unwell, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "PsychonautWiki — Ketamine", "url": "https://psychonautwiki.org/wiki/Ketamine", "accessed_at": "2026-05-21" },
+        { "source": "MAPS — Psychedelic harm reduction", "url": "https://maps.org/our-research/psychedelic-harm-reduction/", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — LSD", "url": "https://wiki.tripsit.me/wiki/LSD", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-lsd-mushrooms",
+      "category_pattern": "psychedelic+psychedelic",
+      "severity": "Low Risk & Synergy",
+      "pair": "lsd+mushrooms",
+      "common_name": "Acid + shrooms",
+      "locales": {
+        "en": {
+          "mechanism_prose": "LSD and mushrooms are both classic serotonergic psychedelics; together they stack in intensity rather than doing anything chemically dangerous. The real risk is psychological: the combined trip can be far stronger and longer than expected, which is overwhelming if you misjudge doses or your setting. Mushroom nausea still applies.",
+          "warning_signs": [
+            "A trip much more intense than planned",
+            "Anxiety, paranoia, or panic",
+            "Nausea early on",
+            "Feeling lost or unable to tell what's real"
+          ],
+          "first_aid": [
+            "Go somewhere calm, dim, and familiar with a trusted person",
+            "Slow your breathing; remind yourself it will pass",
+            "Don't take more — it climbs slowly and stacks",
+            "If panic won't settle or someone is physically unwell, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "MAPS — Psychedelic harm reduction", "url": "https://maps.org/our-research/psychedelic-harm-reduction/", "accessed_at": "2026-05-21" },
+        { "source": "PsychonautWiki — Psilocybin mushrooms", "url": "https://psychonautwiki.org/wiki/Psilocybin_mushrooms", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — LSD", "url": "https://wiki.tripsit.me/wiki/LSD", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-cannabis-mdma",
+      "category_pattern": "psychedelic+stimulant",
+      "severity": "Low Risk & Synergy",
+      "pair": "cannabis+mdma",
+      "common_name": "MDMA + weed",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Weed is one of the most common things people add to MDMA, often on the comedown. Many find it smooths the comedown; others find it suddenly spikes anxiety, paranoia, or a racing heart, especially with strong cannabis or on the peak. Cannabis also makes it easier to lose track of hydration and temperature while on MDMA.",
+          "warning_signs": [
+            "Sudden anxiety, paranoia, or a panic feeling",
+            "Racing or pounding heart",
+            "Dizziness or feeling faint",
+            "Getting too hot or forgetting to drink water"
+          ],
+          "first_aid": [
+            "Sit down somewhere cool and calm; slow your breathing",
+            "Sip water; give it time — cannabis anxiety passes",
+            "Go easy on the cannabis, especially edibles (delayed, hard to dose)",
+            "If your heart pounds dangerously or you feel faint, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "DanceSafe — MDMA", "url": "https://dancesafe.org/mdma/", "accessed_at": "2026-05-21" },
+        { "source": "PsychonautWiki — Cannabis", "url": "https://psychonautwiki.org/wiki/Cannabis", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — Cannabis", "url": "https://wiki.tripsit.me/wiki/Cannabis", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-cocaine-mdma",
+      "category_pattern": "stimulant+stimulant",
+      "severity": "Caution",
+      "pair": "cocaine+mdma",
+      "common_name": "MDMA + coke",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Two stimulants at once stack the load on the heart and the body's temperature control. Cocaine's short high tempts repeated redosing, which keeps pushing heart rate, blood pressure, and overheating higher while masking how hard the body is working. The MDMA comedown also lands harder afterward.",
+          "warning_signs": [
+            "Chest pain, pounding or irregular heartbeat",
+            "Hot, dry skin or a high temperature",
+            "Severe headache",
+            "Redosing cocaine every 20-30 minutes"
+          ],
+          "first_aid": [
+            "Stop, sit somewhere cool, and stop redosing",
+            "Sip water; don't add more stimulants or energy drinks",
+            "Cool down if overheating",
+            "Chest pain, trouble breathing, or confusion means call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "DanceSafe — MDMA", "url": "https://dancesafe.org/mdma/", "accessed_at": "2026-05-21" },
+        { "source": "NIDA — Cocaine", "url": "https://nida.nih.gov/publications/research-reports/cocaine", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — Cocaine", "url": "https://wiki.tripsit.me/wiki/Cocaine", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-alcohol-mdma",
+      "category_pattern": "depressant+stimulant",
+      "severity": "Caution",
+      "pair": "alcohol+mdma",
+      "common_name": "MDMA + alcohol",
+      "locales": {
+        "en": {
+          "mechanism_prose": "MDMA masks how drunk you are, so people drink more than they realize. Alcohol worsens MDMA's dehydration and overheating, and when the MDMA fades the alcohol lands all at once. The combination strains the heart and makes blackouts, falls, and bad decisions more likely.",
+          "warning_signs": [
+            "Not feeling as drunk as you actually are",
+            "Drinking far more than planned",
+            "Overheating, dehydration, dizziness",
+            "Suddenly very drunk as the MDMA wears off"
+          ],
+          "first_aid": [
+            "Switch to water and pace yourself",
+            "Cool down and rest if overheating",
+            "Eat something and stay with friends as the MDMA fades",
+            "If someone can't be roused or is breathing slowly, call 911 / 112"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "DanceSafe — MDMA", "url": "https://dancesafe.org/mdma/", "accessed_at": "2026-05-21" },
+        { "source": "NHS — Alcohol poisoning", "url": "https://www.nhs.uk/conditions/alcohol-poisoning/", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — MDMA", "url": "https://wiki.tripsit.me/wiki/MDMA", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
+    },
+    {
+      "id": "pair-alcohol-ketamine",
+      "category_pattern": "depressant+dissociative",
+      "severity": "Dangerous",
+      "pair": "alcohol+ketamine",
+      "common_name": "Ketamine + alcohol",
+      "locales": {
+        "en": {
+          "mechanism_prose": "Alcohol and ketamine both depress the nervous system and erase coordination and protective reflexes. Together they can knock someone unconscious fast and stop them clearing their own airway. The biggest killers are choking on vomit and breathing slowing or stopping. This is one of the most dangerous common festival mixes — far riskier than people expect.",
+          "warning_signs": [
+            "Passing out or impossible to wake",
+            "Slow or stopped breathing",
+            "Vomiting while unresponsive",
+            "Blue lips, cold skin",
+            "Total loss of coordination"
+          ],
+          "first_aid": [
+            "Call 911 / 112 if they can't be woken or breathing slows",
+            "Put them on their side (recovery position) so vomit drains",
+            "Keep them away from water, stairs, and crowds",
+            "Stay with them and keep checking breathing — keep 911 on the line"
+          ]
+        }
+      },
+      "sources": [
+        { "source": "PsychonautWiki — Ketamine", "url": "https://psychonautwiki.org/wiki/Ketamine", "accessed_at": "2026-05-21" },
+        { "source": "DanceSafe — Drug information", "url": "https://dancesafe.org/drug-information/", "accessed_at": "2026-05-21" },
+        { "source": "TripSit — Ketamine", "url": "https://wiki.tripsit.me/wiki/Ketamine", "accessed_at": "2026-05-21" }
+      ],
+      "reviewed_by": [],
+      "reviewed_at": "2026-05-21"
     }
   ]
 }

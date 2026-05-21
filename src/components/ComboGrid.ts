@@ -73,6 +73,16 @@ function tile(
           "h3",
           { class: "text-base font-semibold text-[var(--color-fg-primary)]" },
           `${a} + ${b}`,
+          pair.mechanism?.common_name
+            ? el(
+                "span",
+                {
+                  class:
+                    "ml-2 align-middle text-xs font-medium rounded-full px-2 py-0.5 bg-[var(--color-bg-overlay)] text-[var(--color-fg-muted)]",
+                },
+                pair.mechanism.common_name,
+              )
+            : undefined,
         ),
         t
           ? el(

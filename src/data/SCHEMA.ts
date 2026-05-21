@@ -77,6 +77,17 @@ export type MechanismEntry = {
    */
   category_pattern: string;
   severity: Severity;
+  /**
+   * Optional substance-pair-specific override, e.g. `lsd+mdma`. When set, this
+   * entry wins over the generic category_pattern match for that exact pair —
+   * used for named festival combos (candyflip, hippie flip, …) that deserve
+   * specific content rather than the category-level explanation. Slugs are
+   * lexicographically ordered. `category_pattern` + `severity` are still
+   * required (they document the entry and feed the validator).
+   */
+  pair?: string;
+  /** Optional slang / common name for a pair entry, e.g. "Candyflip". */
+  common_name?: string;
   locales: {
     en: LocalizedContent;
     [locale: string]: LocalizedContent;
@@ -105,7 +116,8 @@ export type ValidationResult =
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2}))?$/;
 const KEBAB = /^[a-z0-9-]+$/;
-const PATTERN = /^[a-z-]+\+[a-z-]+$/;
+const PATTERN = /^[a-z-]+\+[a-z-]+$/; // category names (no digits)
+const PAIR_RE = /^[a-z0-9-]+\+[a-z0-9-]+$/; // substance slugs (digits allowed: 2c-b)
 const SEVERITY_SET = new Set<string>(SEVERITY_LABELS);
 
 function wordCount(s: string): number {
@@ -219,6 +231,7 @@ export function validateMechanismFile(
 
   const ids = new Set<string>();
   const patternSeverity = new Set<string>();
+  const pairKeys = new Set<string>();
   const entries = file["entries"] as unknown[];
 
   for (let i = 0; i < entries.length; i++) {
@@ -252,13 +265,38 @@ export function validateMechanismFile(
       errors.push(`${p}.severity: must be one of ${SEVERITY_LABELS.join(", ")}`);
     }
 
-    const sevKey = `${e["category_pattern"]}|${e["severity"]}`;
-    if (patternSeverity.has(sevKey)) {
-      errors.push(
-        `${p}: duplicate (category_pattern, severity) tuple "${sevKey}" — entries must be unique on this key`,
-      );
+    // Optional pair-specific override (e.g. "lsd+mdma"). Slugs must be
+    // lexicographically ordered, same as category_pattern.
+    if ("pair" in e) {
+      if (typeof e["pair"] !== "string" || !PAIR_RE.test(e["pair"])) {
+        errors.push(`${p}.pair: must match /^[a-z0-9-]+\\+[a-z0-9-]+$/`);
+      } else {
+        const [pa, pb] = e["pair"].split("+") as [string, string];
+        if (pa > pb) {
+          errors.push(
+            `${p}.pair: slugs must be lexicographically ordered (got "${pa}+${pb}", expected "${pb}+${pa}")`,
+          );
+        }
+        if (pairKeys.has(e["pair"])) {
+          errors.push(`${p}.pair: duplicate pair "${e["pair"]}" — one entry per pair`);
+        }
+        pairKeys.add(e["pair"]);
+      }
+      if ("common_name" in e && typeof e["common_name"] !== "string") {
+        errors.push(`${p}.common_name: must be string when present`);
+      }
+    } else {
+      // Generic entries are unique on (category_pattern, severity). Pair entries
+      // are exempt — a specific override may share a pattern/severity with the
+      // generic entry it overrides.
+      const sevKey = `${e["category_pattern"]}|${e["severity"]}`;
+      if (patternSeverity.has(sevKey)) {
+        errors.push(
+          `${p}: duplicate (category_pattern, severity) tuple "${sevKey}" — entries must be unique on this key`,
+        );
+      }
+      patternSeverity.add(sevKey);
     }
-    patternSeverity.add(sevKey);
 
     if (!e["locales"] || typeof e["locales"] !== "object") {
       errors.push(`${p}.locales: must be object`);

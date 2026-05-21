@@ -57,6 +57,23 @@ type DropdownItem =
 const INPUT_ID = "ps-picker-input";
 const LISTBOX_ID = "ps-picker-listbox";
 
+// Tap-to-add palette for the festival audience (no typing needed). Ordered by
+// rough festival prevalence; only those present in the dataset are rendered.
+const POPULAR_SLUGS = [
+  "mdma",
+  "ketamine",
+  "cocaine",
+  "lsd",
+  "alcohol",
+  "cannabis",
+  "mushrooms",
+  "2c-b",
+  "mda",
+  "amphetamine",
+  "ghb",
+  "nitrous",
+];
+
 export function createSubstancePicker(options: SubstancePickerOptions): SubstancePickerHandle {
   const state: State = {
     selection: [],
@@ -102,9 +119,55 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
   const helper = el("p", {
     class: "text-xs text-[var(--color-fg-muted)]",
   });
+  const quickPick = el("div", { class: "space-y-1.5" });
 
   inputWrap.append(input, listbox);
-  wrap.append(label, chipRow, inputWrap, helper);
+  wrap.append(label, chipRow, inputWrap, helper, quickPick);
+
+  function renderQuickPick(): void {
+    // Hide the palette once the user is at the cap (nothing more to add).
+    if (!state.dataset || state.selection.length >= MAX_SUBSTANCES) {
+      replace(quickPick);
+      return;
+    }
+    const buttons: HTMLElement[] = [];
+    for (const slug of POPULAR_SLUGS) {
+      const sub = state.dataset[slug];
+      if (!sub) continue; // not in dataset this pin
+      if (state.selection.includes(slug as SubstanceSlug)) continue; // already chosen
+      buttons.push(
+        el(
+          "button",
+          {
+            type: "button",
+            class:
+              "inline-flex items-center min-h-touch rounded-full border border-[var(--color-border)] bg-[var(--color-bg-base)] px-3 py-1.5 text-sm text-[var(--color-fg-primary)] hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
+            "data-action": "quick-add",
+            "data-slug": slug,
+          },
+          el("span", { "aria-hidden": "true", class: "mr-1 text-[var(--color-fg-muted)]" }, "+"),
+          sub.pretty_name,
+        ),
+      );
+    }
+    if (buttons.length === 0) {
+      replace(quickPick);
+      return;
+    }
+    replace(
+      quickPick,
+      el(
+        "p",
+        { class: "text-xs text-[var(--color-fg-muted)]" },
+        "Popular at festivals — tap to add:",
+      ),
+      el(
+        "div",
+        { class: "flex flex-wrap gap-2", role: "group", "aria-label": "Popular substances" },
+        ...buttons,
+      ),
+    );
+  }
 
   function renderChips(): void {
     const atCap = state.selection.length >= MAX_SUBSTANCES;
@@ -273,6 +336,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
     renderChips();
     renderHelper();
     renderDropdown();
+    renderQuickPick();
   }
 
   function addSlug(slug: SubstanceSlug): void {
@@ -354,7 +418,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
       if (validated) removeSlug(validated);
     } else if (action === "focus-input") {
       input.focus();
-    } else if (action === "select" && slug) {
+    } else if ((action === "select" || action === "quick-add") && slug) {
       const validated = validateSlug(slug);
       if (validated) addSlug(validated);
     }
@@ -363,6 +427,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
   renderChips();
   renderHelper();
   renderDropdown();
+  renderQuickPick();
 
   return {
     element: wrap,
@@ -371,6 +436,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
       state.index = buildSynonymIndex(dataset);
       renderChips();
       renderDropdown();
+      renderQuickPick();
     },
     setSelection(slugs: SubstanceSlug[]): void {
       // Normalize externally-supplied selection through asSlug to keep the
@@ -381,6 +447,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
       renderChips();
       renderHelper();
       renderDropdown();
+      renderQuickPick();
     },
     clearInput(): void {
       state.query = "";
