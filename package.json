@@ -15,6 +15,7 @@
     "audit": "bun pm audit",
     "validate": "bun run scripts/validate-mechanisms.ts --allow-unreviewed && bun run scripts/apply-overrides.ts && bun run scripts/lint-mechanisms.ts",
     "validate:strict": "bun run scripts/validate-mechanisms.ts && bun run scripts/apply-overrides.ts && bun run scripts/lint-mechanisms.ts",
+    "size": "bun run scripts/check-bundle-size.ts",
     "data:refresh": "bun run scripts/fetch-tripsit.ts && bun run scripts/lean-tripsit.ts"
   },
   "devDependencies": {

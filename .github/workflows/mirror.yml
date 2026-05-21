@@ -1,0 +1,54 @@
+name: Mirror to Codeberg
+
+# Censorship-resistance (PLAN.md Eng E21 / F14): harm-reduction content gets
+# deplatformed. A live Codeberg mirror means the canonical repo survives a
+# GitHub takedown.
+#
+# SETUP (one-time, before this runs):
+#   1. Create the repo on Codeberg: https://codeberg.org/<you>/partysafe
+#   2. Generate an SSH deploy key; add the public key to the Codeberg repo
+#      (Settings → Deploy Keys, with write access).
+#   3. Add the PRIVATE key as a GitHub Actions secret named CODEBERG_SSH_KEY.
+#   4. Add the Codeberg repo SSH URL as a secret named CODEBERG_REPO
+#      (e.g. git@codeberg.org:you/partysafe.git).
+# Until both secrets exist the job no-ops (guarded below).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets are configured
+        id: gate
+        run: |
+          if [ -n "${{ secrets.CODEBERG_SSH_KEY }}" ] && [ -n "${{ secrets.CODEBERG_REPO }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Codeberg mirror secrets not configured — skipping (see workflow header)."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Push to Codeberg
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          CODEBERG_SSH_KEY: ${{ secrets.CODEBERG_SSH_KEY }}
+          CODEBERG_REPO: ${{ secrets.CODEBERG_REPO }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$CODEBERG_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan codeberg.org >> ~/.ssh/known_hosts 2>/dev/null
+          git remote add codeberg "$CODEBERG_REPO"
+          git push --force codeberg main

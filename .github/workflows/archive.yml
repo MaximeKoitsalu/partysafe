@@ -1,0 +1,33 @@
+name: Archive to Wayback Machine
+
+# Snapshot the live site to the Internet Archive on every release (PLAN.md Eng
+# E21 / F14). A second independent copy that survives a hosting takedown.
+# Hash-routed SPA: archiving "/" captures the whole shell; client-side routes
+# render from it.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SITE_URL: https://maximekoitsalu.github.io/partysafe/
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request Wayback snapshot
+        run: |
+          for path in "" "index.html"; do
+            url="${SITE_URL}${path}"
+            echo "Archiving ${url}"
+            # Best-effort; IA rate-limits, so don't fail the workflow on a 429.
+            curl -fsS --max-time 60 "https://web.archive.org/save/${url}" \
+              -o /dev/null -w "  → HTTP %{http_code}\n" || echo "  (save request failed; retry later)"
+            sleep 5
+          done
+          echo "Latest snapshots: https://web.archive.org/web/2/${SITE_URL}"

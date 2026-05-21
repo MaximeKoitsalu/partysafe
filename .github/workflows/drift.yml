@@ -1,0 +1,51 @@
+name: Mirror drift check
+
+# Nightly: confirm the Codeberg mirror is current (PLAN.md Eng E21 / F14).
+# A mirror that silently fell behind is useless at the moment GitHub goes down.
+# Opens an issue if the mirror HEAD differs from GitHub HEAD. No-ops until the
+# Codeberg mirror is configured (see mirror.yml header).
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check mirror is configured
+        id: gate
+        run: |
+          if [ -n "${{ secrets.CODEBERG_HTTP_URL }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "CODEBERG_HTTP_URL not set (e.g. https://codeberg.org/you/partysafe.git) — skipping."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ready == 'true'
+
+      - name: Compare HEADs
+        if: steps.gate.outputs.ready == 'true'
+        env:
+          MIRROR: ${{ secrets.CODEBERG_HTTP_URL }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh_head=$(git rev-parse HEAD)
+          mirror_head=$(git ls-remote "$MIRROR" main | awk '{print $1}')
+          echo "GitHub:   $gh_head"
+          echo "Codeberg: $mirror_head"
+          if [ "$gh_head" != "$mirror_head" ]; then
+            gh issue create \
+              --title "Mirror drift: Codeberg is behind GitHub" \
+              --body "GitHub HEAD \`$gh_head\` ≠ Codeberg HEAD \`$mirror_head\`. The censorship-resistance mirror is stale. Re-run the Mirror workflow." \
+              --label "infra" || echo "issue create failed (label may not exist)"
+          else
+            echo "✓ mirror is current"
+          fi

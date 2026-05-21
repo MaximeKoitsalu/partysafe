@@ -292,6 +292,26 @@ function mount(): void {
     });
 }
 
+/**
+ * Register the service worker for offline support (M7). CSP-safe: the SW is
+ * served from 'self' at the base scope, registered programmatically (no inline
+ * script). We do not force-reload on update — network-first navigation means
+ * the user gets the fresh shell on their next manual reload (no mid-session
+ * disruption).
+ */
+function registerServiceWorker(): void {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  // BASE_URL is "/partysafe/" in prod, "/" in dev. The SW lives at the root of
+  // the deployed base so its scope covers the whole app.
+  const base = import.meta.env.BASE_URL || "/";
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).catch((err) => {
+      // SW is a progressive enhancement — the app works without it.
+      console.warn("partysafe: service worker registration failed", err);
+    });
+  });
+}
+
 // Avoid running mount() during SSR / test environments.
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") {
@@ -299,6 +319,7 @@ if (typeof document !== "undefined") {
   } else {
     mount();
   }
+  registerServiceWorker();
 }
 
 // Re-export bits of the public API for the eventual debug surface and tests.
