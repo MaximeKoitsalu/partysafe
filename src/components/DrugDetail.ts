@@ -120,7 +120,11 @@ function renderKnown(slug: SubstanceSlug, sub: LeanSubstance): HTMLElement {
     el(
       "div",
       {},
-      el("p", { class: "text-xs text-[var(--color-fg-muted)]" }, "Onset"),
+      el(
+        "p",
+        { class: "text-xs text-[var(--color-fg-muted)]" },
+        onset?.route ? `Onset (${onset.route.toLowerCase()})` : "Onset",
+      ),
       el(
         "p",
         { class: "text-base font-medium text-[var(--color-fg-primary)]" },

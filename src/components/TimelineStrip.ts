@@ -28,6 +28,8 @@ type Row = {
   slug: SubstanceSlug;
   pretty: string;
   segments: TimelineSegments;
+  /** Route the onset reflects, when it came from a route-specific field. */
+  onsetRoute?: string;
 };
 
 /** Round minutes up to a friendly axis boundary (30m / 1h / 2h steps). */
@@ -78,7 +80,12 @@ export function createTimelineStrip(): TimelineStripHandle {
       if (!sub) continue;
       const segments = timelineFor(sub.formatted_onset, sub.formatted_duration);
       if (!segments.onset && !segments.total) continue; // no timing data at all
-      rows.push({ slug, pretty: sub.pretty_name, segments });
+      rows.push({
+        slug,
+        pretty: sub.pretty_name,
+        segments,
+        ...(sub.formatted_onset?.route && { onsetRoute: sub.formatted_onset.route }),
+      });
     }
     if (rows.length === 0) return;
 
@@ -119,48 +126,60 @@ export function createTimelineStrip(): TimelineStripHandle {
     rows.forEach((row, i) => {
       const { onset, total, peak_estimate } = row.segments;
       const hue = NEON_BARS[i % NEON_BARS.length] as string;
-      // Bar geometry, all as % of shared axis.
-      // onset:   0 → onset.max  (faded — drug coming up)
-      // peak:    onset.max → peak_estimate.max (full saturation + glow)
-      // comedown: peak.max → total.max (faded — coming down)
-      const onsetEnd = onset?.max ?? 0;
-      const peakEnd = peak_estimate?.max ?? total?.min ?? onsetEnd;
-      const totalEnd = total?.max ?? peakEnd;
-
       const segs: HTMLElement[] = [];
-      if (onsetEnd > 0) {
-        segs.push(
-          el("span", {
-            class: "absolute top-0 bottom-0 rounded-l",
-            style: `left:0;width:${pct(onsetEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
-            title: onset ? `onset ${formatRange(onset)}` : "onset",
-          }),
-        );
-      }
-      if (peakEnd > onsetEnd) {
-        segs.push(
-          el("span", {
-            class: "absolute top-0 bottom-0",
-            style: `left:${pct(onsetEnd, maxMin)}%;width:${pct(peakEnd - onsetEnd, maxMin)}%;background:${hue};box-shadow:0 0 10px -1px ${hue};`,
-            title: "peak",
-          }),
-        );
-      }
-      if (totalEnd > peakEnd) {
-        segs.push(
-          el("span", {
-            class: "absolute top-0 bottom-0 rounded-r",
-            style: `left:${pct(peakEnd, maxMin)}%;width:${pct(totalEnd - peakEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
-            title: total ? `total ${formatRange(total)}` : "duration",
-          }),
-        );
+
+      if (!onset) {
+        // No onset data: don't fabricate a peak. Render a single uniform bar
+        // across the known duration so we don't imply a fast/instant come-up.
+        const end = total?.max ?? 0;
+        if (end > 0) {
+          segs.push(
+            el("span", {
+              class: "absolute top-0 bottom-0 rounded",
+              style: `left:0;width:${pct(end, maxMin)}%;background:color-mix(in srgb, ${hue} 48%, transparent);`,
+              title: total ? `duration ${formatRange(total)} · onset data not available` : "duration",
+            }),
+          );
+        }
+      } else {
+        // onset (faded, coming up) → peak (solid + glow) → comedown (faded).
+        const onsetEnd = onset.max;
+        const peakEnd = peak_estimate?.max ?? total?.min ?? onsetEnd;
+        const totalEnd = total?.max ?? peakEnd;
+        const routeNote = row.onsetRoute ? ` (${row.onsetRoute.toLowerCase()})` : "";
+
+        if (onsetEnd > 0) {
+          segs.push(
+            el("span", {
+              class: "absolute top-0 bottom-0 rounded-l",
+              style: `left:0;width:${pct(onsetEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
+              title: `onset ${formatRange(onset)}${routeNote}`,
+            }),
+          );
+        }
+        if (peakEnd > onsetEnd) {
+          segs.push(
+            el("span", {
+              class: "absolute top-0 bottom-0",
+              style: `left:${pct(onsetEnd, maxMin)}%;width:${pct(peakEnd - onsetEnd, maxMin)}%;background:${hue};box-shadow:0 0 10px -1px ${hue};`,
+              title: "peak",
+            }),
+          );
+        }
+        if (totalEnd > peakEnd) {
+          segs.push(
+            el("span", {
+              class: "absolute top-0 bottom-0 rounded-r",
+              style: `left:${pct(peakEnd, maxMin)}%;width:${pct(totalEnd - peakEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
+              title: total ? `total ${formatRange(total)}` : "duration",
+            }),
+          );
+        }
       }
 
-      const durationLabel = total
-        ? formatRange(total)
-        : onset
-          ? `onset ${formatRange(onset)}`
-          : "—";
+      const routeSuffix = row.onsetRoute ? ` · onset via ${row.onsetRoute.toLowerCase()}` : "";
+      const durationLabel =
+        (total ? formatRange(total) : onset ? `onset ${formatRange(onset)}` : "—") + routeSuffix;
 
       chart.appendChild(
         el(
@@ -193,7 +212,7 @@ export function createTimelineStrip(): TimelineStripHandle {
       el(
         "p",
         { class: "mt-3 text-[11px] italic text-[var(--color-fg-muted)]" },
-        "Bars show typical onset (faded), peak (solid), and comedown (faded). Individual timing varies with dose, route, body, and tolerance. Onset data is missing for some substances.",
+        "Bars show typical onset (faded), peak (solid), and comedown (faded). Onset is highly route-dependent — snorted or vaped hits much faster than swallowed — so it's shown for one common route (hover a bar for which). Timing also varies with dose, body, and tolerance; some substances have no onset data.",
       ),
     );
 

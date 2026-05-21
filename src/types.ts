@@ -44,8 +44,9 @@ export type LeanSubstance = {
   categories: string[];
   dose_note?: string;
   formatted_dose?: Record<string, unknown>;
-  formatted_duration?: { unit: string; value: string };
-  formatted_onset?: { unit: string; value: string };
+  /** `route` is set when the value came from a route-specific (ROA) field. */
+  formatted_duration?: { unit: string; value: string; route?: string };
+  formatted_onset?: { unit: string; value: string; route?: string };
   summary?: string;
   general_advice?: string;
   combos?: Record<string, { status: string; note: string }>;

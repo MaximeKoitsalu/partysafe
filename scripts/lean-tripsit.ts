@@ -53,24 +53,40 @@ type RawSubstance = {
  *   { _unit: "minutes", Insufflated: "7.5-20", Oral: "10-75", ... } ← per route
  *
  * For the timeline strip we need a single representative range. Prefer the
- * generic `value`; otherwise pick the most common recreational route in this
- * order (Oral → Insufflated → first available), and remember which route so
- * the UI can label it if needed.
+ * generic `value`; otherwise pick a representative recreational route.
+ *
+ * Onset is HUGELY route-dependent (snorted ketamine ~10 min vs swallowed
+ * ~10-75 min). We prefer the faster, more common recreational route over oral
+ * so the festival-typical experience is shown — and we record `route` so the UI
+ * can label which one it is (honesty over a single guessed number). Clinical-
+ * only routes (IM/IV) come last so they're never the default. Duration is far
+ * less route-sensitive, so the same picker is fine for it.
  */
-const ROA_PREFERENCE = ["Oral", "Insufflated", "Sublingual", "Intramuscular", "Intravenous", "Rectal", "Smoked", "Vaporized"];
+const ROA_PREFERENCE = [
+  "Insufflated",
+  "Vapourized",
+  "Vaporized",
+  "Smoked",
+  "Sublingual",
+  "Buccal",
+  "Oral",
+  "Rectal",
+  "Intramuscular",
+  "Intravenous",
+];
 
 function pickTiming(
   field: ({ _unit?: string; value?: string } & Record<string, string>) | undefined,
-): { unit: string; value: string } | undefined {
+): { unit: string; value: string; route?: string } | undefined {
   if (!field?._unit) return undefined;
   const unit = field._unit;
   if (field.value) return { unit, value: field.value };
   for (const roa of ROA_PREFERENCE) {
-    if (typeof field[roa] === "string") return { unit, value: field[roa] };
+    if (typeof field[roa] === "string") return { unit, value: field[roa], route: roa };
   }
   // Fall back to the first non-_unit string key.
   for (const [k, v] of Object.entries(field)) {
-    if (k !== "_unit" && typeof v === "string") return { unit, value: v };
+    if (k !== "_unit" && typeof v === "string") return { unit, value: v, route: k };
   }
   return undefined;
 }
@@ -83,8 +99,8 @@ type LeanSubstance = {
   categories: string[];
   dose_note?: string;
   formatted_dose?: Record<string, unknown>;
-  formatted_duration?: { unit: string; value: string };
-  formatted_onset?: { unit: string; value: string };
+  formatted_duration?: { unit: string; value: string; route?: string };
+  formatted_onset?: { unit: string; value: string; route?: string };
   summary?: string;
   general_advice?: string;
   combos?: Record<string, LeanCombo>;
