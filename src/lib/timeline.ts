@@ -46,7 +46,7 @@ export function parseRange(value: string | undefined, unit: string | undefined):
 
   // Pull unit from inline (e.g. "1-2 hours") if not provided.
   const inlineUnit = cleaned.match(/[A-Za-z]+$/);
-  let unitStr = unit ?? inlineUnit?.[0] ?? "minutes";
+  const unitStr = unit ?? inlineUnit?.[0] ?? "minutes";
   const numericPart = inlineUnit ? cleaned.slice(0, inlineUnit.index).trim() : cleaned;
 
   const factor = unitToMinutes(unitStr);

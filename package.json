@@ -7,17 +7,18 @@
   "license": "CC-BY-NC-SA-4.0",
   "scripts": {
     "dev": "vite",
-    "build": "bun run validate && tsc --noEmit && vite build",
+    "build": "bun run validate && bun run lint && tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint \"src/**/*.ts\"",
     "audit": "bun pm audit",
     "validate": "bun run scripts/validate-mechanisms.ts --allow-unreviewed && bun run scripts/apply-overrides.ts && bun run scripts/lint-mechanisms.ts",
     "validate:strict": "bun run scripts/validate-mechanisms.ts && bun run scripts/apply-overrides.ts && bun run scripts/lint-mechanisms.ts",
     "data:refresh": "bun run scripts/fetch-tripsit.ts && bun run scripts/lean-tripsit.ts"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.0.0",
     "@types/bun": "^1.3.0",
     "eslint": "^9.0.0",

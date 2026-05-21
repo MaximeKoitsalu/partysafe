@@ -226,6 +226,34 @@ function renderContent(pair: PairwiseRisk, dataset: LeanDataset | undefined): HT
     );
   }
 
+  // Cross-links to per-substance factsheets (M4 task 3).
+  sections.push(
+    el(
+      "section",
+      { class: "flex flex-wrap gap-2 pt-2 border-t border-[var(--color-border)]" },
+      el(
+        "a",
+        {
+          href: `#/drug/${pair.a}`,
+          class:
+            "inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-overlay)] px-3 py-2 text-sm font-medium text-[var(--color-fg-primary)] no-underline hover:opacity-80",
+        },
+        `${a} factsheet`,
+        el("span", { "aria-hidden": "true" }, "→"),
+      ),
+      el(
+        "a",
+        {
+          href: `#/drug/${pair.b}`,
+          class:
+            "inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-overlay)] px-3 py-2 text-sm font-medium text-[var(--color-fg-primary)] no-underline hover:opacity-80",
+        },
+        `${b} factsheet`,
+        el("span", { "aria-hidden": "true" }, "→"),
+      ),
+    ),
+  );
+
   // Override justification popover (always at bottom when present)
   if (pair.override?.popover) {
     sections.push(

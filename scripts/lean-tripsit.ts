@@ -41,11 +41,39 @@ type RawSubstance = {
   categories?: string[];
   dose_note?: string;
   formatted_dose?: Record<string, unknown>;
-  formatted_duration?: { _unit?: string; value?: string };
-  formatted_onset?: { _unit?: string; value?: string };
+  formatted_duration?: { _unit?: string; value?: string } & Record<string, string>;
+  formatted_onset?: { _unit?: string; value?: string } & Record<string, string>;
   combos?: Record<string, RawCombo>;
   properties?: RawProperties;
 };
+
+/**
+ * TripSit timing fields are sometimes ROA-keyed:
+ *   { _unit: "minutes", value: "20-70" }                            ← simple
+ *   { _unit: "minutes", Insufflated: "7.5-20", Oral: "10-75", ... } ← per route
+ *
+ * For the timeline strip we need a single representative range. Prefer the
+ * generic `value`; otherwise pick the most common recreational route in this
+ * order (Oral → Insufflated → first available), and remember which route so
+ * the UI can label it if needed.
+ */
+const ROA_PREFERENCE = ["Oral", "Insufflated", "Sublingual", "Intramuscular", "Intravenous", "Rectal", "Smoked", "Vaporized"];
+
+function pickTiming(
+  field: ({ _unit?: string; value?: string } & Record<string, string>) | undefined,
+): { unit: string; value: string } | undefined {
+  if (!field?._unit) return undefined;
+  const unit = field._unit;
+  if (field.value) return { unit, value: field.value };
+  for (const roa of ROA_PREFERENCE) {
+    if (typeof field[roa] === "string") return { unit, value: field[roa] };
+  }
+  // Fall back to the first non-_unit string key.
+  for (const [k, v] of Object.entries(field)) {
+    if (k !== "_unit" && typeof v === "string") return { unit, value: v };
+  }
+  return undefined;
+}
 
 type LeanCombo = { status: string; note: string };
 type LeanSubstance = {
@@ -81,12 +109,10 @@ for (const [slug, v] of Object.entries(raw)) {
   };
   if (v.dose_note) out.dose_note = v.dose_note;
   if (v.formatted_dose) out.formatted_dose = v.formatted_dose;
-  if (v.formatted_duration?._unit && v.formatted_duration?.value) {
-    out.formatted_duration = { unit: v.formatted_duration._unit, value: v.formatted_duration.value };
-  }
-  if (v.formatted_onset?._unit && v.formatted_onset?.value) {
-    out.formatted_onset = { unit: v.formatted_onset._unit, value: v.formatted_onset.value };
-  }
+  const duration = pickTiming(v.formatted_duration);
+  if (duration) out.formatted_duration = duration;
+  const onset = pickTiming(v.formatted_onset);
+  if (onset) out.formatted_onset = onset;
   if (v.properties && typeof v.properties === "object") {
     const props = v.properties as Record<string, unknown>;
     if (typeof props["summary"] === "string") out.summary = props["summary"];

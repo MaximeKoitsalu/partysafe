@@ -3,13 +3,13 @@
  *
  * Wires:
  *   - TopBar + EmergencyActionBar (always rendered)
- *   - SubstancePicker + ComboBanner + ComboGrid (combo route)
+ *   - SubstancePicker + ComboBanner + ComboGrid + TimelineStrip (combo route)
+ *   - DrugDetail factsheet (#/drug/[slug])
+ *   - MechanismSheet bottom sheet (combo tile tap)
  *   - Hash router → state → re-render on route change
  *   - Lazy data load (fetch JSON; render shells immediately)
  *
- * Bottom-sheet mechanism explainer / drug detail / emergency view / about
- * land in M3-M5. For M2, tapping a combo tile dispatches a custom event;
- * we render a temporary inline expansion until the sheet exists.
+ * Emergency view / about land in M5.
  */
 
 import { createTopBar } from "./components/TopBar.ts";
@@ -17,7 +17,9 @@ import { createEmergencyActionBar } from "./components/EmergencyActionBar.ts";
 import { createSubstancePicker, type SubstancePickerHandle } from "./components/SubstancePicker.ts";
 import { createComboBanner, type ComboBannerHandle } from "./components/ComboBanner.ts";
 import { createComboGrid, type ComboGridHandle } from "./components/ComboGrid.ts";
+import { createTimelineStrip, type TimelineStripHandle } from "./components/TimelineStrip.ts";
 import { createMechanismSheet, type MechanismSheetHandle } from "./components/MechanismSheet.ts";
+import { renderDrugDetail } from "./components/DrugDetail.ts";
 import { loadAll } from "./data/load.ts";
 import { el, replace } from "./lib/dom.ts";
 import { pairwiseRisksFor } from "./lib/combo.ts";
@@ -49,8 +51,10 @@ const state: AppState = { selection: [] };
 let picker: SubstancePickerHandle;
 let banner: ComboBannerHandle;
 let grid: ComboGridHandle;
+let timeline: TimelineStripHandle;
 let sheet: MechanismSheetHandle;
 let comboSection: HTMLElement;
+let readMoreMount: HTMLElement;
 
 function computeAnalysis(): ComboAnalysis | undefined {
   if (!state.dataset || !state.mechanisms) return undefined;
@@ -61,11 +65,52 @@ function computeAnalysis(): ComboAnalysis | undefined {
   });
 }
 
+/** "Read more about X" cross-link rows below the grid (M4 task 3). */
+function renderReadMore(): void {
+  replace(readMoreMount);
+  if (!state.dataset || state.selection.length === 0) return;
+  readMoreMount.appendChild(
+    el(
+      "section",
+      { class: "space-y-2", role: "region", "aria-label": "Substance factsheets" },
+      el(
+        "h3",
+        { class: "text-xs uppercase tracking-wider text-[var(--color-fg-muted)]" },
+        "Read more",
+      ),
+      ...state.selection.map((slug) => {
+        const sub = state.dataset?.[slug];
+        const pretty = sub?.pretty_name ?? slug;
+        const cats = sub?.categories.filter((c) => c !== "common").slice(0, 2).join(" · ");
+        return el(
+          "a",
+          {
+            href: `#/drug/${slug}`,
+            class:
+              "flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 no-underline hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
+          },
+          el(
+            "span",
+            { class: "min-w-0" },
+            el("span", { class: "block text-base font-semibold text-[var(--color-fg-primary)]" }, pretty),
+            cats
+              ? el("span", { class: "block text-sm text-[var(--color-fg-muted)]" }, cats)
+              : undefined,
+          ),
+          el("span", { class: "text-[var(--color-fg-muted)] text-xl shrink-0", "aria-hidden": "true" }, "›"),
+        );
+      }),
+    ),
+  );
+}
+
 function renderCombo(): void {
   picker.setSelection(state.selection);
   const analysis = computeAnalysis();
   banner.update(analysis, state.selection.length);
   grid.update(analysis, state.dataset);
+  timeline.update(state.selection, state.dataset);
+  renderReadMore();
   // Close sheet whenever selection changes — the previously open mechanism no
   // longer matches the current grid.
   if (sheet?.isOpen()) sheet.close();
@@ -81,6 +126,8 @@ function renderHome(): void {
       picker.element,
     ),
     grid.element,
+    timeline.element,
+    readMoreMount,
   );
   renderCombo();
 }
@@ -123,10 +170,9 @@ function renderRoute(route: ParsedRoute): void {
       break;
     }
     case "drug":
-      renderPlaceholder(
-        `${state.dataset?.[route.substance]?.pretty_name ?? route.substance} — factsheet`,
-        "Per-substance factsheet pages land in M4. They will show dose ranges, duration, onset, harm-reduction tips, and links to upstream sources.",
-      );
+      if (sheet?.isOpen()) sheet.close();
+      replace(comboSection, renderDrugDetail(route.substance, state.dataset));
+      window.scrollTo(0, 0);
       break;
     case "emergency":
       renderPlaceholder(
@@ -178,10 +224,12 @@ function mount(): void {
   picker = createSubstancePicker({ onSelectionChange });
   banner = createComboBanner();
   sheet = createMechanismSheet();
+  timeline = createTimelineStrip();
   grid = createComboGrid({
     onTileClick: (pair: PairwiseRisk) => sheet.open(pair, state.dataset),
   });
   comboSection = el("div", { class: "mx-auto max-w-2xl px-4 py-6 space-y-4" });
+  readMoreMount = el("div", { class: "space-y-2" });
 
   replace(appMount, comboSection);
   // Mount the sheet at the body level so it overlays the entire viewport.
