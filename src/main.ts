@@ -13,6 +13,7 @@
  */
 
 import { createTopBar } from "./components/TopBar.ts";
+import { createDraftNotice } from "./components/DraftNotice.ts";
 import { createEmergencyActionBar, type EmergencyActionBarHandle } from "./components/EmergencyActionBar.ts";
 import { createSubstancePicker, type SubstancePickerHandle } from "./components/SubstancePicker.ts";
 import { createComboBanner, type ComboBannerHandle } from "./components/ComboBanner.ts";
@@ -236,7 +237,7 @@ function mount(): void {
     return;
   }
 
-  replace(topBarMount, createTopBar());
+  replace(topBarMount, createTopBar(), createDraftNotice());
 
   appLang = typeof navigator !== "undefined" ? navigator.language : undefined;
   actionBar = createEmergencyActionBar(appLang);

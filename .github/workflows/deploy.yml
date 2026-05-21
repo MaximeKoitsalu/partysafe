@@ -1,15 +1,11 @@
 name: Deploy to GitHub Pages
 
-# Manual-trigger only while the repo is private and the ship gates (clinical
-# review, legal review, distribution) are open. GitHub Pages requires a public
-# repo on the free plan, so an automatic push trigger would fail on every push.
-#
-# AT LAUNCH: once the repo is public and the ship gates are cleared, restore the
-# automatic trigger by uncommenting the `push` block below — every merge to main
-# then deploys.
+# Repo is public; deploys on every push to main. The site carries a persistent
+# "draft — not yet clinically reviewed" notice (src/components/DraftNotice.ts)
+# until the clinical-review ship gate is met. Remove that notice when review lands.
 on:
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
