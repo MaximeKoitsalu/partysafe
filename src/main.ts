@@ -26,6 +26,7 @@ import { renderEmergencyView } from "./components/EmergencyView.ts";
 import { renderAboutView } from "./components/AboutView.ts";
 import { loadAll } from "./data/load.ts";
 import { el, replace } from "./lib/dom.ts";
+import { revealOne } from "./lib/anim.ts";
 import { pairwiseRisksFor } from "./lib/combo.ts";
 import { pushRecentCombo } from "./lib/storage.ts";
 import {
@@ -238,6 +239,8 @@ function mount(): void {
   }
 
   replace(topBarMount, createTopBar(), createDraftNotice());
+  // One-time entrance for the top bar (brand + draft notice).
+  revealOne(topBarMount.firstElementChild, { y: -10, durationMs: 500 });
 
   appLang = typeof navigator !== "undefined" ? navigator.language : undefined;
   actionBar = createEmergencyActionBar(appLang);

@@ -15,6 +15,7 @@
  */
 
 import { el, replace } from "../lib/dom.ts";
+import { revealStagger } from "../lib/anim.ts";
 import { rankMatches, type Match } from "../lib/match.ts";
 import {
   asSlug,
@@ -437,6 +438,11 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
       renderChips();
       renderDropdown();
       renderQuickPick();
+      // Stagger the popular-substance pills in on first data load.
+      revealStagger(quickPick.querySelectorAll('[data-action="quick-add"]'), {
+        staggerMs: 35,
+        durationMs: 380,
+      });
     },
     setSelection(slugs: SubstanceSlug[]): void {
       // Normalize externally-supplied selection through asSlug to keep the

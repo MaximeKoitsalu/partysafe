@@ -15,6 +15,7 @@
  */
 
 import { el, replace } from "../lib/dom.ts";
+import { revealStagger } from "../lib/anim.ts";
 import { SEVERITY_ORDER, tokenFor } from "../lib/severity.ts";
 import type { ComboAnalysis, LeanDataset, PairwiseRisk } from "../types.ts";
 
@@ -212,6 +213,11 @@ export function createComboGrid(options: ComboGridOptions = {}): ComboGridHandle
         : undefined,
       renderTiles(analysis.pairs, dataset),
     );
+    // Stagger the freshly-rendered tiles in (no-op under reduced motion).
+    revealStagger(wrap.querySelectorAll('[aria-label*="Tap for mechanism"]'), {
+      staggerMs: 60,
+      durationMs: 420,
+    });
   }
 
   wrap.addEventListener("click", (event) => {

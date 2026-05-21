@@ -14,6 +14,7 @@
  */
 
 import { el, replace } from "../lib/dom.ts";
+import { popIn, revealOne } from "../lib/anim.ts";
 import { tokenFor } from "../lib/severity.ts";
 import type { ComboAnalysis } from "../types.ts";
 
@@ -30,17 +31,33 @@ export function createComboBanner(): ComboBannerHandle {
   });
 
   function renderEmpty(): void {
+    const sun = el("div", { class: "retro-sun shrink-0", "aria-hidden": "true" });
     replace(
       wrap,
       el(
         "div",
         {
           class:
-            "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-fg-muted)]",
+            "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-5 flex items-center gap-4",
         },
-        "Pick 2 or more substances to see how they interact. Combo information appears here.",
+        sun,
+        el(
+          "div",
+          { class: "space-y-1" },
+          el(
+            "p",
+            { class: "text-base font-semibold text-[var(--color-fg-primary)]" },
+            "Know before you go.",
+          ),
+          el(
+            "p",
+            { class: "text-sm text-[var(--color-fg-muted)]" },
+            "Pick 2 or more substances to see how they interact — risks, what to watch for, and what to do if something goes wrong.",
+          ),
+        ),
       ),
     );
+    popIn(sun);
   }
 
   function renderCumulativeWarning(count: number): void {
@@ -164,6 +181,8 @@ export function createComboBanner(): ComboBannerHandle {
         ),
       ),
     );
+    // Quick, sober reveal — never a celebratory bounce on a severity readout.
+    revealOne(wrap.firstElementChild);
   }
 
   function update(analysis: ComboAnalysis | undefined, selectionCount: number): void {

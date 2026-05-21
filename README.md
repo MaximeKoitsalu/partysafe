@@ -109,8 +109,14 @@ pairs is regression-tested (`src/test/combo-coverage.test.ts`, ≥ 80% floor).
 - WCAG AA contrast verified by test (`src/test/contrast.test.ts`) for every
   severity color in both themes.
 - Skip-to-content link, focus-visible rings, focus trap in modal + sheet,
-  `prefers-reduced-motion` honored, 44px minimum touch targets, dark mode default
-  with `prefers-color-scheme` + manual toggle.
+  44px minimum touch targets, dark mode default with `prefers-color-scheme` +
+  manual toggle.
+- **Motion** ("neon dusk" vaporwave skin): anime.js entrance reveals + CSS
+  ambient effects (grid drift, sun glow, brand pulse), all gated behind
+  `prefers-reduced-motion: reduce` — when set, content appears statically and
+  nothing is left mid-animation (`src/lib/anim.ts` no-ops; verified by test).
+  The only runtime dependency is anime.js (~14 KB gz, bundled from `'self'`,
+  CSP-safe); there is still no UI framework.
 
 ## Manual smoke test matrix (pre-deploy)
 
