@@ -15,7 +15,8 @@ export function createTopBar(): HTMLElement {
       "a",
       {
         href: "#/",
-        class: "text-lg font-semibold tracking-tight text-[var(--color-fg-primary)] no-underline",
+        class: "brand text-xl no-underline",
+        "aria-label": "partysafe — home",
       },
       "partysafe",
     ),

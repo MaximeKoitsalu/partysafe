@@ -42,32 +42,34 @@ function contrast(a: string, b: string): number {
 
 // Mirror of tailwind.css @theme tokens. Kept in sync by this test's existence —
 // if the CSS changes, update here and the assertion guards the floor.
+// "Neon dusk" vaporwave surfaces. Severity colors must still clear WCAG AA on
+// the deep-purple panels — this test is the guard.
 const DARK = {
-  base: "#0f172a",
-  elevated: "#1e293b",
-  fgPrimary: "#f1f5f9",
-  fgMuted: "#94a3b8",
+  base: "#160726",
+  elevated: "#221141",
+  fgPrimary: "#f4ecff",
+  fgMuted: "#c4b0ec",
   sev: {
     synergy: "#94a3b8",
-    lowNoSyn: "#60a5fa",
-    lowDecrease: "#a78bfa",
+    lowNoSyn: "#38bdf8",
+    lowDecrease: "#c4b5fd",
     caution: "#fbbf24",
     unsafe: "#fb923c",
-    dangerous: "#f87171",
+    dangerous: "#fb7185",
   },
 };
 const LIGHT = {
-  base: "#ffffff",
-  elevated: "#f8fafc",
-  fgPrimary: "#0f172a",
-  fgMuted: "#475569",
+  base: "#fdf4ff",
+  elevated: "#ffffff",
+  fgPrimary: "#2e1065",
+  fgMuted: "#6d5494",
   sev: {
     synergy: "#475569",
-    lowNoSyn: "#1d4ed8",
+    lowNoSyn: "#0369a1",
     lowDecrease: "#6d28d9",
     caution: "#b45309",
     unsafe: "#c2410c",
-    dangerous: "#b91c1c",
+    dangerous: "#be123c",
   },
 };
 

@@ -1,71 +1,79 @@
 @import "tailwindcss";
 
 /*
- * partysafe design tokens (Tailwind v4 @theme).
- * Locked at PLAN.md gate close-out (Design phase D1-D14, D2 color tokens).
+ * partysafe — "neon dusk" vaporwave skin.
  *
- * Reading guide:
- * - Typography: Inter (UI), Source Serif 4 (mechanism prose), JetBrains Mono (timeline/numerals).
- *   All self-hosted (Eng F8). Self-hosting fonts is a privacy + offline decision.
- * - Severity colors: dark-mode-primary palette. Every chip pairs color + icon + qualifier
- *   text (Design D2/D11). Dangerous gets a stripe pattern overlay so it survives
- *   color-blind users and B&W printing.
- * - Dark mode is default. Light mode is the alt (Design D3).
- *   `prefers-color-scheme: dark` honored; manual toggle via .light-mode class on <html>.
- * - Touch targets: 44px minimum (D13).
- * - Motion: `motion-reduce:` variants required on every animation (D14).
+ * Aesthetic: 1am festival sunset. Deep indigo→magenta gradient sky, a retro
+ * perspective grid horizon, neon cyan/magenta accents, glowing wordmark.
+ *
+ * NON-NEGOTIABLE under the skin (harm-reduction safety):
+ * - The 6 severity colors keep their meaning, stay WCAG AA on the new dark
+ *   surfaces (verified in src/test/contrast.test.ts), and never use green for
+ *   "safe". Color + icon + (Dangerous) stripe pattern all preserved.
+ * - Mechanism prose + safety content sit on calm, opaque panels — the gradient
+ *   and grid live in the background and margins, never behind body text.
+ * - Motion is gentle and `prefers-reduced-motion` collapses it.
+ * Typography stays self-hosted system stacks (privacy: no webfont CDN); the
+ * vaporwave character comes from gradient/glow/tracking treatment, not a font.
  */
 
 @theme {
-  /* Typography */
+  /* Typography (self-hosted stacks; character via treatment, not webfonts) */
   --font-sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
   --font-serif: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Severity colors — dark mode (default) */
+  /* Severity colors — dark mode (default). Unchanged meanings; verified AA on
+   * the deep-purple surfaces below. Amber/orange/red pop hard on purple. */
   --color-sev-synergy: #94a3b8; /* slate-400; NOT green. Reported synergy, not safety. */
-  --color-sev-low-no-syn: #60a5fa; /* blue-400 */
-  --color-sev-low-decrease: #a78bfa; /* violet-400 */
+  --color-sev-low-no-syn: #38bdf8; /* sky-400 — distinct from the purple chrome */
+  --color-sev-low-decrease: #c4b5fd; /* violet-300 — lighter so it separates from bg */
   --color-sev-caution: #fbbf24; /* amber-400 */
   --color-sev-unsafe: #fb923c; /* orange-400 */
-  --color-sev-dangerous: #f87171; /* red-400 (paired with diagonal stripe pattern) */
+  --color-sev-dangerous: #fb7185; /* rose-400 (paired with diagonal stripe pattern) */
 
-  /* Severity colors — light mode (passes WCAG AA on white bg) */
+  /* Severity colors — light mode (pastel vaporwave; AA on near-white bg) */
   --color-sev-synergy-light: #475569; /* slate-600 */
-  --color-sev-low-no-syn-light: #1d4ed8; /* blue-700 */
+  --color-sev-low-no-syn-light: #0369a1; /* sky-700 */
   --color-sev-low-decrease-light: #6d28d9; /* violet-700 */
   --color-sev-caution-light: #b45309; /* amber-700 */
   --color-sev-unsafe-light: #c2410c; /* orange-700 */
-  --color-sev-dangerous-light: #b91c1c; /* red-700 */
+  --color-sev-dangerous-light: #be123c; /* rose-700 */
 
-  /* Surfaces — dark mode default */
-  --color-bg-base: #0f172a; /* slate-900 */
-  --color-bg-elevated: #1e293b; /* slate-800 */
-  --color-bg-overlay: #334155; /* slate-700 — bottom sheets */
-  --color-fg-primary: #f1f5f9; /* slate-100 */
-  --color-fg-muted: #94a3b8; /* slate-400 */
-  --color-border: #334155; /* slate-700 */
+  /* Surfaces — dark mode default (vaporwave night) */
+  --color-bg-base: #160726; /* deep purple-black; gradient overlays this */
+  --color-bg-elevated: #221141; /* panels — opaque so content stays calm */
+  --color-bg-overlay: #33205e; /* sheets, chips */
+  --color-fg-primary: #f4ecff; /* lavender white */
+  --color-fg-muted: #c4b0ec; /* muted lavender */
+  --color-border: #3b2566; /* purple border */
+
+  /* Neon accents (chrome only — never severity) */
+  --color-neon-cyan: #2ee6ff;
+  --color-neon-magenta: #ff3d9a;
+  --color-neon-purple: #b06bff;
 
   /* Touch target minimum (D13) */
   --spacing-touch: 2.75rem; /* 44px */
 
-  /* Emergency action bar */
-  --color-emergency-bar: #1e293b; /* neutral slate-800; NOT severity-red — desensitization */
+  /* Emergency action bar — dark glassy, neon top edge; NOT severity-red */
+  --color-emergency-bar: #1a0b30;
   --color-emergency-icon: #fbbf24; /* amber */
-  --color-emergency-fg: #f1f5f9; /* slate-100 */
+  --color-emergency-fg: #f4ecff;
 }
 
-/* Light mode overrides (when html.light-mode is set or prefers-color-scheme: light + no override) */
 @layer base {
+  /* Light mode = pastel vaporwave (soft pink/lavender). Dark is the star. */
   html.light-mode {
-    --color-bg-base: #ffffff;
-    --color-bg-elevated: #f8fafc; /* slate-50 */
-    --color-bg-overlay: #e2e8f0; /* slate-200 */
-    --color-fg-primary: #0f172a; /* slate-900 */
-    --color-fg-muted: #475569; /* slate-600 */
-    --color-border: #cbd5e1; /* slate-300 */
+    --color-bg-base: #fdf4ff; /* faint pink-white */
+    --color-bg-elevated: #ffffff;
+    --color-bg-overlay: #f3e8ff; /* violet-100 */
+    --color-fg-primary: #2e1065; /* violet-950 */
+    --color-fg-muted: #6d5494;
+    --color-border: #e9d5ff; /* violet-200 */
+    --color-emergency-bar: #2e1065;
     --color-sev-synergy: var(--color-sev-synergy-light);
     --color-sev-low-no-syn: var(--color-sev-low-no-syn-light);
     --color-sev-low-decrease: var(--color-sev-low-decrease-light);
@@ -76,12 +84,13 @@
 
   @media (prefers-color-scheme: light) {
     html:not(.dark-mode) {
-      --color-bg-base: #ffffff;
-      --color-bg-elevated: #f8fafc;
-      --color-bg-overlay: #e2e8f0;
-      --color-fg-primary: #0f172a;
-      --color-fg-muted: #475569;
-      --color-border: #cbd5e1;
+      --color-bg-base: #fdf4ff;
+      --color-bg-elevated: #ffffff;
+      --color-bg-overlay: #f3e8ff;
+      --color-fg-primary: #2e1065;
+      --color-fg-muted: #6d5494;
+      --color-border: #e9d5ff;
+      --color-emergency-bar: #2e1065;
       --color-sev-synergy: var(--color-sev-synergy-light);
       --color-sev-low-no-syn: var(--color-sev-low-no-syn-light);
       --color-sev-low-decrease: var(--color-sev-low-decrease-light);
@@ -91,7 +100,6 @@
     }
   }
 
-  /* Base reset for the app */
   html {
     background: var(--color-bg-base);
     color: var(--color-fg-primary);
@@ -105,11 +113,96 @@
   body {
     margin: 0;
     min-height: 100vh;
-    /* Reserve space for the sticky emergency action bar (64px). */
-    padding-bottom: 4rem;
+    position: relative;
+    padding-bottom: 4rem; /* room for the sticky emergency bar */
+    /* Sunset sky: magenta glow rising from the horizon over a deep indigo night. */
+    background:
+      radial-gradient(ellipse 130% 70% at 50% 108%, rgba(255, 61, 154, 0.22), transparent 60%),
+      radial-gradient(ellipse 90% 50% at 80% 0%, rgba(46, 230, 255, 0.1), transparent 55%),
+      linear-gradient(180deg, #160726 0%, #1d0b39 45%, #2a1050 100%);
+    background-attachment: fixed;
   }
 
-  /* Reduced motion: collapse all animations to instant transitions. (D14) */
+  /* Retro perspective grid receding to the horizon (the outrun floor). Fixed,
+   * behind everything, faded toward the top so it never reaches body text. */
+  body::before {
+    content: "";
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    width: 240%;
+    height: 48vh;
+    transform: translateX(-50%) perspective(38vh) rotateX(62deg);
+    transform-origin: bottom center;
+    background-image:
+      linear-gradient(rgba(46, 230, 255, 0.22) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 61, 154, 0.22) 1px, transparent 1px);
+    background-size: 2.6rem 2.6rem;
+    -webkit-mask-image: linear-gradient(transparent 0%, #000 75%);
+    mask-image: linear-gradient(transparent 0%, #000 75%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Light mode tones the sky + grid down to pastels. */
+  html.light-mode body,
+  html:not(.dark-mode) body {
+    background:
+      radial-gradient(ellipse 130% 70% at 50% 108%, rgba(236, 72, 153, 0.12), transparent 60%),
+      radial-gradient(ellipse 90% 50% at 80% 0%, rgba(56, 189, 248, 0.1), transparent 55%),
+      linear-gradient(180deg, #fdf4ff 0%, #fae8ff 60%, #f5e6ff 100%);
+    background-attachment: fixed;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.dark-mode) body::before {
+      background-image:
+        linear-gradient(rgba(168, 85, 247, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(236, 72, 153, 0.18) 1px, transparent 1px);
+    }
+  }
+  html.light-mode body::before {
+    background-image:
+      linear-gradient(rgba(168, 85, 247, 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(236, 72, 153, 0.18) 1px, transparent 1px);
+  }
+
+  /* Neon gradient wordmark with a soft glow + slow pulse. */
+  .brand {
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(
+      92deg,
+      var(--color-neon-cyan),
+      var(--color-neon-magenta) 60%,
+      var(--color-neon-purple)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 6px rgba(255, 61, 154, 0.55))
+      drop-shadow(0 0 14px rgba(46, 230, 255, 0.35));
+    animation: brand-pulse 4s ease-in-out infinite;
+  }
+  @keyframes brand-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 5px rgba(255, 61, 154, 0.45))
+        drop-shadow(0 0 12px rgba(46, 230, 255, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 9px rgba(255, 61, 154, 0.7))
+        drop-shadow(0 0 20px rgba(46, 230, 255, 0.5));
+    }
+  }
+
+  /* Soft neon edge for the headline panel(s). Opt-in via .neon-edge. */
+  .neon-edge {
+    box-shadow:
+      0 0 0 1px rgba(176, 107, 255, 0.35),
+      0 8px 30px -12px rgba(255, 61, 154, 0.35);
+  }
+
+  /* Reduced motion: collapse all animations to instant. (D14) */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -119,11 +212,14 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    .brand {
+      animation: none !important;
+    }
   }
 
-  /* Focus ring — accessible across both themes */
+  /* Focus ring — neon cyan, accessible across both themes */
   :focus-visible {
-    outline: 2px solid var(--color-sev-caution);
+    outline: 2px solid var(--color-neon-cyan);
     outline-offset: 2px;
   }
 
@@ -168,8 +264,7 @@
     overscroll-behavior: contain;
   }
 
-  /* Line-clamp utility for combo tile summaries (Tailwind v4 provides this
-   * via @plugin but inline definition is smaller). */
+  /* Line-clamp utility for combo tile summaries. */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -179,11 +274,8 @@
 }
 
 /*
- * Print stylesheet (Design D20, Eng F13).
- * Locked layout: 4x6 portrait wallet card with inverted emergency block at bottom 1.5in.
- * Full content spec implemented in src/components/PrintCard.ts (M5).
- * This block sets the @page rule + force-print backgrounds (iOS Safari needs the
- * `print-color-adjust: exact` directive).
+ * Print stylesheet (Design D20, Eng F13). Forces plain black-on-white wallet
+ * card; the neon skin is screen-only.
  */
 @media print {
   @page {
@@ -198,8 +290,10 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  body::before {
+    display: none !important;
+  }
 
-  /* Hide non-print UI. Each component opts in by adding .print-only or .print-hide */
   .print-hide,
   .sticky-emergency-bar,
   .menu,

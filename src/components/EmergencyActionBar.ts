@@ -24,8 +24,10 @@ export type EmergencyActionBarHandle = {
 export function createEmergencyActionBar(lang: string | undefined): EmergencyActionBarHandle {
   const bar = el("div", {
     class:
-      "fixed bottom-0 inset-x-0 z-50 flex border-t border-[var(--color-border)] bg-[var(--color-emergency-bar)]",
-    style: "height: 4rem;",
+      "sticky-emergency-bar fixed bottom-0 inset-x-0 z-50 flex border-t border-[var(--color-border)] bg-[var(--color-emergency-bar)]",
+    // Neon edge rising from the bar — vaporwave glow, still legible (Design C2).
+    style:
+      "height: 4rem; box-shadow: 0 -1px 0 0 rgba(46,230,255,0.45), 0 -10px 28px -10px rgba(255,61,154,0.4);",
     role: "toolbar",
     "aria-label": "Emergency actions",
   });
