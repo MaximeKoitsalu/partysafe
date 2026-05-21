@@ -55,7 +55,7 @@ function renderContent(pair: PairwiseRisk, dataset: LeanDataset | undefined): HT
             { class: "space-y-0.5" },
             el(
               "h2",
-              { class: "text-2xl font-semibold text-[var(--color-fg-primary)] leading-tight" },
+              { class: "font-display text-3xl font-extrabold text-[var(--color-fg-primary)] leading-tight tracking-tight" },
               commonName,
             ),
             el(
@@ -333,7 +333,7 @@ export function createMechanismSheet(): MechanismSheetHandle {
     "div",
     {
       class:
-        "fixed left-0 right-0 bottom-0 z-[60] mx-auto max-w-2xl rounded-t-2xl border-t border-[var(--color-border)] bg-[var(--color-bg-elevated)] shadow-2xl transform transition-transform duration-200 ease-out motion-reduce:transition-opacity motion-reduce:transform-none translate-y-full",
+        "glass fixed left-0 right-0 bottom-0 z-[60] mx-auto max-w-2xl rounded-t-2xl shadow-2xl transform transition-transform duration-200 ease-out motion-reduce:transition-opacity motion-reduce:transform-none translate-y-full",
       role: "dialog",
       "aria-modal": "true",
       "aria-label": "Mechanism details",

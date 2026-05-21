@@ -26,7 +26,7 @@ import { renderEmergencyView } from "./components/EmergencyView.ts";
 import { renderAboutView } from "./components/AboutView.ts";
 import { loadAll } from "./data/load.ts";
 import { el, replace } from "./lib/dom.ts";
-import { revealOne } from "./lib/anim.ts";
+import { revealOne, revealOnScroll } from "./lib/anim.ts";
 import { pairwiseRisksFor } from "./lib/combo.ts";
 import { pushRecentCombo } from "./lib/storage.ts";
 import {
@@ -121,6 +121,9 @@ function renderCombo(): void {
   grid.update(analysis, state.dataset);
   timeline.update(state.selection, state.dataset);
   renderReadMore();
+  // Below-the-fold sections rise in as they scroll into view (reduced-motion
+  // safe; above-fold sections reveal immediately).
+  revealOnScroll([timeline.element, readMoreMount], { y: 16 });
   // Close sheet whenever selection changes — the previously open mechanism no
   // longer matches the current grid.
   if (sheet?.isOpen()) sheet.close();
@@ -132,7 +135,7 @@ function renderHome(): void {
     banner.element,
     el(
       "section",
-      { class: "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4" },
+      { class: "glass rounded-2xl p-4" },
       picker.element,
     ),
     grid.element,

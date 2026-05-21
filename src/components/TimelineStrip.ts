@@ -103,7 +103,7 @@ export function createTimelineStrip(): TimelineStripHandle {
     );
 
     const chart = el("div", {
-      class: "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4",
+      class: "glass rounded-2xl p-4",
     });
 
     // X-axis tick labels

@@ -87,3 +87,38 @@ export function popIn(target: Targets, opts: { delayMs?: number } = {}): void {
     ease: "outElastic(1, 0.6)",
   });
 }
+
+/**
+ * Reveal elements as they scroll into view (the awwwards staple). Each target
+ * starts hidden (opacity 0, nudged down) and animates in once it crosses the
+ * viewport, then is unobserved. Above-the-fold targets fire immediately, so
+ * nothing is ever left stuck hidden.
+ *
+ * Under reduced motion (or where IntersectionObserver is missing) it's a no-op:
+ * targets keep their natural visibility.
+ */
+export function revealOnScroll(
+  targets: Targets,
+  opts: { y?: number; durationMs?: number } = {},
+): void {
+  const els = toArray(targets) as HTMLElement[];
+  if (els.length === 0) return;
+  if (prefersReducedMotion() || typeof IntersectionObserver === "undefined") return;
+
+  const { y = 18, durationMs = 520 } = opts;
+  const io = new IntersectionObserver(
+    (entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        animate(el, { opacity: [0, 1], translateY: [y, 0], duration: durationMs, ease: "out(3)" });
+        observer.unobserve(el);
+      }
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+  );
+  for (const el of els) {
+    el.style.opacity = "0"; // hidden until revealed; IO fires synchronously-ish for in-view
+    io.observe(el);
+  }
+}

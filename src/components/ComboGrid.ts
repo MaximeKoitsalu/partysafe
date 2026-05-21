@@ -60,7 +60,7 @@ function tile(
     {
       type: "button",
       class:
-        "w-full text-left rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 flex items-start gap-3 transition-colors hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
+        "pressable w-full text-left rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 flex items-start gap-3 hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)]",
       style: `border-left: 4px solid ${accent};`,
       "aria-label": `${a} + ${b}${t ? `: ${t.label}` : ""}. Tap for mechanism details.`,
     },

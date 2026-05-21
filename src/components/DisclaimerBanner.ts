@@ -56,7 +56,7 @@ export function createDisclaimerBanner(): DisclaimerHandle {
         "div",
         {
           class:
-            "max-w-md w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 space-y-4 shadow-2xl",
+            "glass max-w-md w-full rounded-2xl p-6 space-y-4 shadow-2xl",
         },
         el(
           "h2",

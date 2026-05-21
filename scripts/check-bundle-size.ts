@@ -19,6 +19,10 @@ const BUDGETS: Array<{ match: RegExp; maxKb: number; label: string }> = [
   { match: /^tripsit\.lean-.*\.json$/, maxKb: 150, label: "TripSit dataset" },
 ];
 
+// Self-hosted fonts: budget the TOTAL woff2 payload (already-compressed, so
+// gzip is a no-op; measure raw).
+const FONT_BUDGET_KB = 120;
+
 if (!existsSync(DIST)) {
   console.error(`check-bundle-size: ${DIST} not found — run \`bun run build\` first`);
   process.exit(1);
@@ -40,6 +44,18 @@ for (const budget of BUDGETS) {
   if (!ok) failed = true;
   rows.push(
     `  ${ok ? "✓" : "✗"}  ${budget.label}: ${gzKb.toFixed(1)} KB gz (budget ${budget.maxKb} KB) — ${file}`,
+  );
+}
+
+// Fonts: sum all woff2.
+const fontFiles = files.filter((f) => f.endsWith(".woff2"));
+if (fontFiles.length > 0) {
+  let totalKb = 0;
+  for (const f of fontFiles) totalKb += readFileSync(resolve(DIST, f)).length / 1024;
+  const ok = totalKb <= FONT_BUDGET_KB;
+  if (!ok) failed = true;
+  rows.push(
+    `  ${ok ? "✓" : "✗"}  fonts (${fontFiles.length} woff2): ${totalKb.toFixed(1)} KB total (budget ${FONT_BUDGET_KB} KB)`,
   );
 }
 

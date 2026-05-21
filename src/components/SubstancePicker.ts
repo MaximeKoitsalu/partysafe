@@ -142,7 +142,7 @@ export function createSubstancePicker(options: SubstancePickerOptions): Substanc
           {
             type: "button",
             class:
-              "inline-flex items-center min-h-touch rounded-full border border-[var(--color-border)] bg-[var(--color-bg-base)] px-3 py-1.5 text-sm text-[var(--color-fg-primary)] hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)] motion-reduce:transition-none",
+              "pressable inline-flex items-center min-h-touch rounded-full border border-[var(--color-border)] bg-[var(--color-bg-base)] px-3 py-1.5 text-sm text-[var(--color-fg-primary)] hover:bg-[var(--color-bg-overlay)] focus-visible:bg-[var(--color-bg-overlay)]",
             "data-action": "quick-add",
             "data-slug": slug,
           },

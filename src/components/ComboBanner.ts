@@ -38,7 +38,7 @@ export function createComboBanner(): ComboBannerHandle {
         "div",
         {
           class:
-            "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-5 flex items-center gap-4",
+            "glass rounded-2xl p-5 flex items-center gap-4",
         },
         sun,
         el(
@@ -46,7 +46,7 @@ export function createComboBanner(): ComboBannerHandle {
           { class: "space-y-1" },
           el(
             "p",
-            { class: "text-base font-semibold text-[var(--color-fg-primary)]" },
+            { class: "font-display text-lg font-extrabold text-[var(--color-fg-primary)] tracking-tight" },
             "Know before you go.",
           ),
           el(
@@ -80,7 +80,7 @@ export function createComboBanner(): ComboBannerHandle {
           ),
           el(
             "h2",
-            { class: "text-xl font-semibold" },
+            { class: "font-display text-xl font-extrabold tracking-tight" },
             `${count} substances — cumulative risk not modeled`,
           ),
         ),
@@ -107,7 +107,7 @@ export function createComboBanner(): ComboBannerHandle {
           "div",
           {
             class:
-              "rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-4 text-sm text-[var(--color-fg-muted)]",
+              "glass rounded-2xl p-4 text-sm text-[var(--color-fg-muted)]",
             role: "status",
           },
           el(
@@ -135,8 +135,8 @@ export function createComboBanner(): ComboBannerHandle {
         "div",
         {
           class:
-            "rounded-lg border border-[var(--color-border)] p-4 space-y-1",
-          style: `background: color-mix(in srgb, var(${t.cssVar}) 18%, var(--color-bg-elevated)); border-left: 4px solid var(${t.cssVar});`,
+            "neon-edge rounded-2xl border border-[var(--color-border)] p-4 space-y-1",
+          style: `background: color-mix(in srgb, var(${t.cssVar}) 20%, var(--color-bg-elevated)); border-left: 4px solid var(${t.cssVar});`,
           role: "region",
           "aria-label": `Worst-case severity: ${t.label}`,
         },
@@ -164,7 +164,7 @@ export function createComboBanner(): ComboBannerHandle {
             ),
             el(
               "h2",
-              { class: "text-2xl font-semibold text-[var(--color-fg-primary)] leading-tight" },
+              { class: "font-display text-3xl font-extrabold text-[var(--color-fg-primary)] leading-tight tracking-tight" },
               t.label,
             ),
           ),
