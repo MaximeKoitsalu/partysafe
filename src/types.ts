@@ -107,11 +107,31 @@ export type ComboAnalysis = {
 };
 
 /** Region code for emergency hotline routing. */
-export type RegionCode = "US" | "GB" | "EU" | "PT-BR" | "AU" | "NZ" | "CA" | "OTHER";
+export type RegionCode =
+  | "US"
+  | "CA"
+  | "GB"
+  | "IE"
+  | "EU"
+  | "PT-BR"
+  | "AU"
+  | "NZ"
+  | "IN"
+  | "ZA"
+  | "OTHER";
 
 export type EmergencyHotline = {
   region: RegionCode;
   label: string;
   tel: string;
   description?: string;
+};
+
+/** A drug-specific / crisis support line (distinct from the emergency number). */
+export type SupportLine = {
+  region: RegionCode;
+  name: string;
+  tel: string;
+  display: string;
+  note?: string;
 };

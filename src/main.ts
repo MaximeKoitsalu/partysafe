@@ -13,16 +13,20 @@
  */
 
 import { createTopBar } from "./components/TopBar.ts";
-import { createEmergencyActionBar } from "./components/EmergencyActionBar.ts";
+import { createEmergencyActionBar, type EmergencyActionBarHandle } from "./components/EmergencyActionBar.ts";
 import { createSubstancePicker, type SubstancePickerHandle } from "./components/SubstancePicker.ts";
 import { createComboBanner, type ComboBannerHandle } from "./components/ComboBanner.ts";
 import { createComboGrid, type ComboGridHandle } from "./components/ComboGrid.ts";
 import { createTimelineStrip, type TimelineStripHandle } from "./components/TimelineStrip.ts";
 import { createMechanismSheet, type MechanismSheetHandle } from "./components/MechanismSheet.ts";
+import { createDisclaimerBanner, type DisclaimerHandle } from "./components/DisclaimerBanner.ts";
 import { renderDrugDetail } from "./components/DrugDetail.ts";
+import { renderEmergencyView } from "./components/EmergencyView.ts";
+import { renderAboutView } from "./components/AboutView.ts";
 import { loadAll } from "./data/load.ts";
 import { el, replace } from "./lib/dom.ts";
 import { pairwiseRisksFor } from "./lib/combo.ts";
+import { pushRecentCombo } from "./lib/storage.ts";
 import {
   currentRoute,
   navigate,
@@ -53,8 +57,12 @@ let banner: ComboBannerHandle;
 let grid: ComboGridHandle;
 let timeline: TimelineStripHandle;
 let sheet: MechanismSheetHandle;
+let disclaimer: DisclaimerHandle;
+let actionBar: EmergencyActionBarHandle;
+let appLang: string | undefined;
 let comboSection: HTMLElement;
 let readMoreMount: HTMLElement;
+let disclaimerSeenThisSession = false;
 
 function computeAnalysis(): ComboAnalysis | undefined {
   if (!state.dataset || !state.mechanisms) return undefined;
@@ -175,16 +183,20 @@ function renderRoute(route: ParsedRoute): void {
       window.scrollTo(0, 0);
       break;
     case "emergency":
-      renderPlaceholder(
-        "Emergency",
-        "The full emergency view (signs of overdose, recovery position diagram, regional hotlines) lands in M5. In an emergency right now: call 911 (US) / 112 (EU) / 999 (UK) / 000 (AU).",
+      if (sheet?.isOpen()) sheet.close();
+      replace(
+        comboSection,
+        renderEmergencyView({
+          lang: appLang,
+          onRegionChange: () => actionBar.refresh(),
+        }),
       );
+      window.scrollTo(0, 0);
       break;
     case "about":
-      renderPlaceholder(
-        "About partysafe",
-        "License (CC BY-NC-SA 4.0), attribution to TripSit and other harm-reduction sources, and the full disclaimer land in M5. For now see ATTRIBUTION.md and DISCLAIMER.md in the repo.",
-      );
+      if (sheet?.isOpen()) sheet.close();
+      replace(comboSection, renderAboutView());
+      window.scrollTo(0, 0);
       break;
     case "unknown":
       renderPlaceholder(
@@ -196,7 +208,15 @@ function renderRoute(route: ParsedRoute): void {
 }
 
 function onSelectionChange(slugs: SubstanceSlug[]): void {
+  // First picker interaction this session triggers the disclaimer modal
+  // (Design D9/H7 — first interaction, not page load).
+  if (!disclaimerSeenThisSession) {
+    disclaimerSeenThisSession = true;
+    disclaimer.maybeShow();
+  }
   state.selection = slugs;
+  // Persist a complete combo (2+) to the local recents list (privacy: device-only).
+  if (slugs.length >= 2) pushRecentCombo(slugs);
   // Update the URL without polluting history (Eng E5 picker change rule).
   navigate(
     slugs.length === 0
@@ -218,13 +238,15 @@ function mount(): void {
 
   replace(topBarMount, createTopBar());
 
-  const lang = typeof navigator !== "undefined" ? navigator.language : undefined;
-  replace(emergencyMount, createEmergencyActionBar(lang));
+  appLang = typeof navigator !== "undefined" ? navigator.language : undefined;
+  actionBar = createEmergencyActionBar(appLang);
+  replace(emergencyMount, actionBar.element);
 
   picker = createSubstancePicker({ onSelectionChange });
   banner = createComboBanner();
   sheet = createMechanismSheet();
   timeline = createTimelineStrip();
+  disclaimer = createDisclaimerBanner();
   grid = createComboGrid({
     onTileClick: (pair: PairwiseRisk) => sheet.open(pair, state.dataset),
   });
@@ -232,8 +254,9 @@ function mount(): void {
   readMoreMount = el("div", { class: "space-y-2" });
 
   replace(appMount, comboSection);
-  // Mount the sheet at the body level so it overlays the entire viewport.
+  // Mount the sheet + disclaimer at the body level so they overlay the viewport.
   document.body.appendChild(sheet.element);
+  document.body.appendChild(disclaimer.element);
   renderRoute(currentRoute());
   subscribe(renderRoute);
 
