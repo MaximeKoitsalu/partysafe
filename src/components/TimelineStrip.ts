@@ -56,6 +56,11 @@ function pct(value: number, max: number): number {
   return Math.max(0, Math.min(100, (value / max) * 100));
 }
 
+// Neon timeline hues — one per substance row so stacked bars stay distinct.
+// Deliberately COOL/electric (cyan, magenta, purple, teal): never amber/orange/
+// red, so a timeline bar is never mistaken for a severity readout.
+const NEON_BARS = ["#2ee6ff", "#ff3d9a", "#b06bff", "#2bffc6"] as const;
+
 export function createTimelineStrip(): TimelineStripHandle {
   const wrap = el("section", {
     class: "space-y-3",
@@ -111,11 +116,12 @@ export function createTimelineStrip(): TimelineStripHandle {
     );
     chart.appendChild(axis);
 
-    for (const row of rows) {
+    rows.forEach((row, i) => {
       const { onset, total, peak_estimate } = row.segments;
+      const hue = NEON_BARS[i % NEON_BARS.length] as string;
       // Bar geometry, all as % of shared axis.
       // onset:   0 → onset.max  (faded — drug coming up)
-      // peak:    onset.max → peak_estimate.max (full saturation)
+      // peak:    onset.max → peak_estimate.max (full saturation + glow)
       // comedown: peak.max → total.max (faded — coming down)
       const onsetEnd = onset?.max ?? 0;
       const peakEnd = peak_estimate?.max ?? total?.min ?? onsetEnd;
@@ -126,7 +132,7 @@ export function createTimelineStrip(): TimelineStripHandle {
         segs.push(
           el("span", {
             class: "absolute top-0 bottom-0 rounded-l",
-            style: `left:0;width:${pct(onsetEnd, maxMin)}%;background:color-mix(in srgb, var(--color-sev-caution) 35%, transparent);`,
+            style: `left:0;width:${pct(onsetEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
             title: onset ? `onset ${formatRange(onset)}` : "onset",
           }),
         );
@@ -135,7 +141,7 @@ export function createTimelineStrip(): TimelineStripHandle {
         segs.push(
           el("span", {
             class: "absolute top-0 bottom-0",
-            style: `left:${pct(onsetEnd, maxMin)}%;width:${pct(peakEnd - onsetEnd, maxMin)}%;background:var(--color-sev-caution);`,
+            style: `left:${pct(onsetEnd, maxMin)}%;width:${pct(peakEnd - onsetEnd, maxMin)}%;background:${hue};box-shadow:0 0 10px -1px ${hue};`,
             title: "peak",
           }),
         );
@@ -144,7 +150,7 @@ export function createTimelineStrip(): TimelineStripHandle {
         segs.push(
           el("span", {
             class: "absolute top-0 bottom-0 rounded-r",
-            style: `left:${pct(peakEnd, maxMin)}%;width:${pct(totalEnd - peakEnd, maxMin)}%;background:color-mix(in srgb, var(--color-sev-caution) 35%, transparent);`,
+            style: `left:${pct(peakEnd, maxMin)}%;width:${pct(totalEnd - peakEnd, maxMin)}%;background:color-mix(in srgb, ${hue} 32%, transparent);`,
             title: total ? `total ${formatRange(total)}` : "duration",
           }),
         );
@@ -181,7 +187,7 @@ export function createTimelineStrip(): TimelineStripHandle {
           ),
         ),
       );
-    }
+    });
 
     chart.appendChild(
       el(
