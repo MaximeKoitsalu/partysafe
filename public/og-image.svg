@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="partysafe — combo information for harm reduction">
+  <!--
+    Open Graph card. Intentionally severity-free (Design D12 + CEO #25): no
+    "this combo is safe" framing, no region-specific emergency number. Neutral
+    product card only.
+
+    Note: many social platforms render OG images as raster only. A PNG export
+    (1200x630) is a pre-launch task; this SVG is the source of truth.
+  -->
+  <rect width="1200" height="630" fill="#0f172a"/>
+
+  <!-- Brand mark: two overlapping rings = a combination -->
+  <circle cx="150" cy="150" r="42" fill="none" stroke="#fbbf24" stroke-width="11"/>
+  <circle cx="194" cy="150" r="42" fill="none" stroke="#60a5fa" stroke-width="11"/>
+
+  <text x="260" y="168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="60" font-weight="700" fill="#f1f5f9">partysafe</text>
+
+  <text x="80" y="320" font-family="ui-sans-serif, system-ui, sans-serif" font-size="54" font-weight="600" fill="#f1f5f9">Pick what you're taking.</text>
+  <text x="80" y="392" font-family="ui-sans-serif, system-ui, sans-serif" font-size="54" font-weight="600" fill="#f1f5f9">See how it interacts.</text>
+
+  <text x="80" y="478" font-family="ui-sans-serif, system-ui, sans-serif" font-size="32" fill="#94a3b8">Plain-English harm-reduction info. Not medical advice.</text>
+  <text x="80" y="522" font-family="ui-sans-serif, system-ui, sans-serif" font-size="32" fill="#94a3b8">No accounts. No tracking. Built on TripSit data.</text>
+
+  <text x="80" y="588" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" fill="#fbbf24">In an emergency, call your local emergency number.</text>
+</svg>

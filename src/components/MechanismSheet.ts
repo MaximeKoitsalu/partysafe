@@ -15,7 +15,7 @@
  * element on close. All content rendered via textContent / el() — no innerHTML.
  */
 
-import { el, replace } from "../lib/dom.ts";
+import { el, replace, trapFocus } from "../lib/dom.ts";
 import { tokenFor } from "../lib/severity.ts";
 import type { LeanDataset, PairwiseRisk } from "../types.ts";
 
@@ -291,6 +291,7 @@ export function createMechanismSheet(): MechanismSheetHandle {
   let dragStartY: number | null = null;
   let dragOffset = 0;
   let isOpen = false;
+  let releaseTrap: (() => void) | null = null;
 
   // --- structure ---
   const dragHandle = el("div", {
@@ -350,6 +351,8 @@ export function createMechanismSheet(): MechanismSheetHandle {
     });
     document.body.classList.add(BODY_LOCK_CLASS);
     isOpen = true;
+    // Keep keyboard focus inside the sheet while it's open.
+    releaseTrap = trapFocus(sheet);
     // Focus the close button so keyboard users land somewhere reasonable.
     setTimeout(() => closeBtn.focus(), 60);
   }
@@ -365,6 +368,10 @@ export function createMechanismSheet(): MechanismSheetHandle {
     }, 220);
     document.body.classList.remove(BODY_LOCK_CLASS);
     isOpen = false;
+    if (releaseTrap) {
+      releaseTrap();
+      releaseTrap = null;
+    }
     if (lastFocus && typeof lastFocus.focus === "function") {
       lastFocus.focus();
     }

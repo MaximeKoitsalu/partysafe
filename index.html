@@ -15,9 +15,17 @@
                                 dev style injection; revisit if we eliminate it.
     -->
     <meta name="referrer" content="no-referrer" />
+    <!--
+      frame-ancestors is intentionally omitted here: browsers ignore it when
+      delivered via <meta> (it's header-only). It ships in public/_headers for
+      hosts that support response headers (Cloudflare Pages, Netlify). The meta
+      CSP below covers the directives that ARE honored in markup.
+      connect-src is 'self' only — all datasets are emitted as real files (see
+      vite.config.ts assetsInlineLimit: 0), never data: URIs.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none';"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'none';"
     />
 
     <title>partysafe — combo information for harm reduction</title>
@@ -28,14 +36,17 @@
 
     <!--
       OG card is intentionally severity-free (Design D12 + CEO #25).
-      No "this combo is safe" framing in social shares.
+      No "this combo is safe" framing in social shares, and no region-specific
+      emergency number (don't assume the visitor's country — see lib/emergency.ts).
     -->
     <meta property="og:title" content="partysafe — combo information" />
     <meta
       property="og:description"
-      content="Combo info for harm reduction. Mechanism explanations, not medical advice. Emergency: 911 (US) · 112 (EU) · Never Use Alone 1-800-484-3731."
+      content="Combo info for harm reduction. Mechanism explanations, timing, and emergency resources. Not medical advice. In an emergency, call your local emergency number."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -46,13 +57,30 @@
     <link rel="stylesheet" href="/src/styles/tailwind.css" />
   </head>
   <body>
+    <!-- Skip link: first focusable element, jumps keyboard users past the top bar. -->
+    <a href="#app" class="skip-link">Skip to content</a>
+
     <!-- Top bar: brand + menu. Emergency moves to sticky bottom bar (Design C2). -->
     <header class="top-bar" role="banner">
       <div id="top-bar-mount"></div>
     </header>
 
     <!-- Main content mount point. Components render into here at runtime. -->
-    <main id="app" role="main"></main>
+    <main id="app" role="main" tabindex="-1">
+      <noscript>
+        <div style="max-width: 40rem; margin: 0 auto; padding: 2rem 1rem">
+          <h1>partysafe needs JavaScript</h1>
+          <p>
+            This is a static, privacy-first app — all logic runs in your browser, so it needs
+            JavaScript enabled. No data is ever sent to a server.
+          </p>
+          <p>
+            In an emergency, call your local emergency number now (112 across most of the world,
+            911 in North America, 999 in the UK, 000 in Australia).
+          </p>
+        </div>
+      </noscript>
+    </main>
 
     <!--
       Sticky emergency action bar (Design D8 + C2).

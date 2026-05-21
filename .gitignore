@@ -21,3 +21,4 @@ Thumbs.db
 
 # Pulled at build time; only the lean version is committed (see scripts/lean-tripsit.ts)
 src/data/tripsit.raw.json
+.gstack/

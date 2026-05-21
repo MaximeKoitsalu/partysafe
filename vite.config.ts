@@ -23,6 +23,15 @@ export default defineConfig({
     sourcemap: false,
     cssCodeSplit: true,
     minify: "esbuild",
+    // Never inline assets as data: URIs. Two reasons:
+    //  1. Our CSP is `connect-src 'self'` — fetch() of a data: URI is blocked,
+    //     so an inlined JSON asset would fail to load at runtime (caught in M6
+    //     live QA: the whole app failed to load its data because small JSONs
+    //     like overrides.json + the pin were inlined under the 4KB default).
+    //  2. Determinism (E18): a file crossing the inline threshold would flip
+    //     between inlined and emitted, changing the build non-deterministically.
+    // Every dataset is emitted as a real file fetched from 'self'.
+    assetsInlineLimit: 0,
     // Deterministic asset names — content-hashed, no timestamps.
     rollupOptions: {
       output: {

@@ -88,3 +88,33 @@ export function replace(target: Node, ...next: Child[]): void {
     }
   }
 }
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Trap Tab focus within `container` (modal / sheet accessibility). Returns a
+ * cleanup function that removes the listener. Wrapping Tab keeps keyboard users
+ * inside the dialog while it's open; pair with aria-modal + Escape + restore.
+ */
+export function trapFocus(container: HTMLElement): () => void {
+  function onKeydown(event: KeyboardEvent): void {
+    if (event.key !== "Tab") return;
+    const focusable = Array.from(
+      container.querySelectorAll<HTMLElement>(FOCUSABLE),
+    ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (focusable.length === 0) return;
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+  container.addEventListener("keydown", onKeydown);
+  return () => container.removeEventListener("keydown", onKeydown);
+}

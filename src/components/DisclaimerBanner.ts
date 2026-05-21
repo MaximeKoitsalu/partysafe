@@ -12,7 +12,7 @@
  * maybeShow() is a no-op if already acknowledged within the TTL.
  */
 
-import { el, replace } from "../lib/dom.ts";
+import { el, replace, trapFocus } from "../lib/dom.ts";
 import { acknowledgeDisclaimer, disclaimerAcknowledged } from "../lib/storage.ts";
 
 export type DisclaimerHandle = {
@@ -23,12 +23,21 @@ export type DisclaimerHandle = {
 
 export function createDisclaimerBanner(): DisclaimerHandle {
   const root = el("div", { class: "hidden" });
+  let releaseTrap: (() => void) | null = null;
 
-  function close(): void {
-    acknowledgeDisclaimer();
+  function teardown(): void {
+    if (releaseTrap) {
+      releaseTrap();
+      releaseTrap = null;
+    }
     replace(root);
     root.classList.add("hidden");
     document.body.classList.remove("ps-sheet-open");
+  }
+
+  function close(): void {
+    acknowledgeDisclaimer();
+    teardown();
   }
 
   function show(): void {
@@ -103,13 +112,12 @@ export function createDisclaimerBanner(): DisclaimerHandle {
       } else if (action === "emergency") {
         // Acknowledge (they've seen it) then let the hash navigation proceed.
         acknowledgeDisclaimer();
-        replace(root);
-        root.classList.add("hidden");
-        document.body.classList.remove("ps-sheet-open");
+        teardown();
       }
     });
 
-    // First focusable element for keyboard users.
+    // Keep focus within the modal (it's blocking) and land on the primary button.
+    releaseTrap = trapFocus(card);
     setTimeout(() => {
       const btn = card.querySelector("[data-action='ack']") as HTMLElement | null;
       btn?.focus();

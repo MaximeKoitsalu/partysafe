@@ -1,0 +1,6 @@
+# partysafe is a public-good harm-reduction reference. Indexing is welcome —
+# discoverability is the point (people search "is X safe with Y" before use).
+User-agent: *
+Allow: /
+
+# No sitemap yet (single-page hash-routed app; routes are client-side).
